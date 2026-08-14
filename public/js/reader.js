@@ -569,13 +569,6 @@ window.BibleReader = {
             window.BibleCardGen?.prepareCardWithMultipleVerses(sorted);
         });
 
-        // 원어 사전 보기
-        document.getElementById('btn-action-strong')?.addEventListener('click', () => {
-            const sorted = this.getSelectedVersesSorted();
-            if (sorted.length === 0) return;
-            window.BibleStrong?.showForVerse(window.BibleApp.state.currentUnitCode, sorted[0].jeol);
-        });
-
         // 관주 보기
         document.getElementById('btn-action-crossref')?.addEventListener('click', () => {
             const sorted = this.getSelectedVersesSorted();

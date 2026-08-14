@@ -48,7 +48,6 @@ window.BibleApp = {
         window.BibleReader?.init();
         window.BibleNav?.init();
         window.BibleSearch?.init();
-        window.BibleStrong?.init();
         window.BibleCrossRef?.init();
         window.BibleCardGen?.init();
         window.BibleReading?.init();
@@ -371,11 +370,6 @@ window.BibleApp = {
         });
         document.getElementById('btn-open-settings')?.addEventListener('click', () => this.openModal('modal-settings'));
         document.getElementById('btn-open-family-links')?.addEventListener('click', () => this.openModal('modal-family-links'));
-
-        // 원어 분해 모드 버튼
-        document.getElementById('btn-open-strong')?.addEventListener('click', () => {
-            window.BibleStrong?.toggleSidePanel();
-        });
 
         // 번역본 선택 모달 열기 버튼 (모바일/PC 공용)
         document.getElementById('btn-open-versions')?.addEventListener('click', () => {

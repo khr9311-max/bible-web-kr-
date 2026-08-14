@@ -93,9 +93,6 @@
             <button class="icon-action-btn" id="btn-toggle-focus" title="성경 본문만 보기 (집중 모드)">
                 <i data-lucide="maximize-2"></i>
             </button>
-            <button class="icon-action-btn" id="btn-open-strong" title="원어 성경 분해 모드 토글">
-                <span class="strong-icon-badge">원어</span>
-            </button>
             <button class="icon-action-btn" id="btn-open-search" title="성경 검색 (Ctrl+F)">
                 <i data-lucide="search"></i>
             </button>
@@ -188,18 +185,18 @@
             </div>
         </div>
 
-        <!-- Right Side Panel (Original Language Strong & Cross Reference) -->
+        <!-- Right Side Panel (Cross Reference) -->
         <aside class="side-inspect-panel" id="side-inspect-panel">
             <div class="side-panel-header">
                 <h3 id="side-panel-title">
-                    <i data-lucide="book-marked"></i> <span id="side-title-text">원어 스트롱 분해</span>
+                    <i data-lucide="book-marked"></i> <span id="side-title-text">스마트 관주 탐색</span>
                 </h3>
                 <button class="btn-close-panel" id="btn-close-side-panel"><i data-lucide="x"></i></button>
             </div>
             <div class="side-panel-content" id="side-panel-content">
                 <div class="panel-empty-state">
                     <i data-lucide="mouse-pointer-click"></i>
-                    <p>본문에서 절 또는 단어를 클릭하면<br>원어 스트롱 분해 및 관주 참조 구절이 표시됩니다.</p>
+                    <p>본문에서 관주 기호나 절을 클릭하면<br>연관 관주 참조 구절이 표시됩니다.</p>
                 </div>
             </div>
         </aside>
@@ -226,7 +223,6 @@
             <button class="toolbar-btn" id="btn-action-bookmark" title="북마크"><i data-lucide="bookmark"></i> 북마크</button>
             <button class="toolbar-btn" id="btn-action-note" title="묵상 메모"><i data-lucide="edit-3"></i> 메모</button>
             <button class="toolbar-btn" id="btn-action-card" title="말씀 카드"><i data-lucide="image"></i> 카드</button>
-            <button class="toolbar-btn" id="btn-action-strong" title="원어 사전"><i data-lucide="languages"></i> 원어</button>
             <button class="toolbar-btn" id="btn-action-crossref" title="관주"><i data-lucide="git-fork"></i> 관주</button>
             <button class="toolbar-btn" id="btn-action-copy" title="구절 복사"><i data-lucide="copy"></i> 복사</button>
         </div>
@@ -779,7 +775,6 @@
     <script src="/js/app.js"></script>
     <script src="/js/reader.js"></script>
     <script src="/js/navigator.js"></script>
-    <script src="/js/strong.js"></script>
     <script src="/js/cross_ref.js"></script>
     <script src="/js/card_generator.js"></script>
     <script src="/js/reading_tracker.js"></script>

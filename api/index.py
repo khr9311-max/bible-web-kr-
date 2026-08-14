@@ -14,15 +14,6 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 DB_PATH = os.path.join(ROOT_DIR, "server", "data", "bible.db")
 DB_GZ_PATH = os.path.join(ROOT_DIR, "server", "data", "bible.db.gz")
 TMP_DB_PATH = "/tmp/bible.db"
-STRONG_DICT_PATH = os.path.join(ROOT_DIR, "server", "data", "strong_dict.json")
-
-strong_dict = {}
-if os.path.exists(STRONG_DICT_PATH):
-    try:
-        with open(STRONG_DICT_PATH, "r", encoding="utf-8") as f:
-            strong_dict = json.load(f)
-    except Exception as e:
-        print("Strong dict load error:", e)
 
 def ensure_db_extracted():
     if os.path.exists(DB_PATH) and os.path.getsize(DB_PATH) > 1000000:
