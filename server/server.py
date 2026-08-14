@@ -127,15 +127,9 @@ class BibleRequestHandler(http.server.SimpleHTTPRequestHandler):
                 """, (unit_code,))
                 verses = [dict(r) for r in cur.fetchall()]
 
-                # 하이라이트, 북마크, 메모 매핑
+                # 하이라이트 매핑
                 cur.execute("SELECT jeol, color FROM user_highlights WHERE unit_code = ?;", (unit_code,))
                 hl_map = {r["jeol"]: r["color"] for r in cur.fetchall()}
-
-                cur.execute("SELECT id, jeol, label FROM user_bookmarks WHERE unit_code = ?;", (unit_code,))
-                bm_map = {r["jeol"]: dict(r) for r in cur.fetchall()}
-
-                cur.execute("SELECT id, jeol, content, updated_at FROM user_notes WHERE unit_code = ?;", (unit_code,))
-                note_map = {r["jeol"]: dict(r) for r in cur.fetchall()}
 
                 cur.execute("SELECT read_count, last_read_at FROM user_reading_log WHERE unit_code = ?;", (unit_code,))
                 read_row = cur.fetchone()
@@ -143,8 +137,6 @@ class BibleRequestHandler(http.server.SimpleHTTPRequestHandler):
                 for v in verses:
                     j = v["jeol"]
                     v["highlight"] = hl_map.get(j)
-                    v["bookmark"] = bm_map.get(j)
-                    v["note"] = note_map.get(j)
 
                 self.send_json({
                     "unit_code": unit_code,

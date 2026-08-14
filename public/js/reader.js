@@ -18,7 +18,6 @@ window.BibleReader = {
     init() {
         this.setupToolbarEvents();
         this.setupTtsEvents();
-        this.setupNoteModal();
         this.loadChapter(window.BibleApp.state.currentUnitCode, window.BibleApp.state.currentJeol);
     },
 
@@ -120,17 +119,12 @@ window.BibleReader = {
                 const priText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
                 const compText = this.cleanVerseHtml(v[compCol] || '');
 
-                const bookmarkBadge = v.bookmark ? `<span class="verse-badge-icon icon-bookmark-tag" title="북마크됨">🔖</span>` : '';
-                const noteBadge = v.note ? `<span class="verse-badge-icon icon-note-tag" title="메모 있음">📝</span>` : '';
-
                 html += `
                     ${stitleRowHtml}
                     <div class="verse-compare-row ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
                         <div class="compare-pri-col">
                             <span class="verse-num">${v.jeol}</span>
                             <span class="verse-text">${priText}</span>
-                            ${bookmarkBadge}
-                            ${noteBadge}
                         </div>
                         <div class="compare-sec-col">
                             <span class="verse-text compare-sec-text">${compText}</span>
@@ -148,16 +142,11 @@ window.BibleReader = {
                 const stitleHtml = priStitle ? `<div class="section-stitle">${this.formatStitle(priStitle)}</div>` : '';
                 const verseText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
 
-                const bookmarkBadge = v.bookmark ? `<span class="verse-badge-icon icon-bookmark-tag" title="북마크됨">🔖</span>` : '';
-                const noteBadge = v.note ? `<span class="verse-badge-icon icon-note-tag" title="메모 있음">📝</span>` : '';
-
                 html += `
                     ${stitleHtml}
                     <div class="verse-item ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
                         <span class="verse-num">${v.jeol}</span>
                         <span class="verse-text">${verseText}</span>
-                        ${bookmarkBadge}
-                        ${noteBadge}
                     </div>
                 `;
             });
@@ -518,48 +507,6 @@ window.BibleReader = {
             });
         });
 
-        // 일괄 북마크
-        document.getElementById('btn-action-bookmark')?.addEventListener('click', async () => {
-            const sorted = this.getSelectedVersesSorted();
-            if (sorted.length === 0) return;
-
-            const unit = window.BibleApp.state.currentUnitCode;
-            await Promise.all(sorted.map(v => {
-                return window.BibleApp.fetchApi('/user/bookmark', {
-                    method: 'POST',
-                    body: JSON.stringify({ unit_code: unit, jeol: v.jeol })
-                });
-            }));
-
-            await this.reload();
-            window.BibleApp.showToast(`${sorted.length}개 구절의 북마크가 업데이트되었습니다.`);
-        });
-
-        // 메모 모달 열기
-        document.getElementById('btn-action-note')?.addEventListener('click', () => {
-            const sorted = this.getSelectedVersesSorted();
-            if (sorted.length === 0) return;
-
-            const bName = window.BibleApp.state.currentBookMeta.name;
-            const ch = window.BibleApp.state.currentChapter;
-
-            let versesSummary = '';
-            if (sorted.length === 1) {
-                versesSummary = `${bName} ${ch}:${sorted[0].jeol} - ${this.cleanVerseHtml(sorted[0].phrase_rv)}`;
-            } else {
-                versesSummary = `${bName} ${ch}:${sorted[0].jeol}~${sorted[sorted.length - 1].jeol} (${sorted.length}개 구절)\n` +
-                    sorted.map(v => `${v.jeol}. ${this.cleanVerseHtml(v.phrase_rv)}`).join('\n');
-            }
-
-            document.getElementById('note-verse-text').textContent = versesSummary;
-            document.getElementById('note-textarea').value = sorted[0].note ? sorted[0].note.content : '';
-
-            const delBtn = document.getElementById('btn-delete-note');
-            if (delBtn) delBtn.style.display = sorted[0].note ? 'inline-block' : 'none';
-
-            window.BibleApp.openModal('modal-note');
-        });
-
         // 일괄 말씀 카드 만들기
         document.getElementById('btn-action-card')?.addEventListener('click', () => {
             const sorted = this.getSelectedVersesSorted();
@@ -605,40 +552,6 @@ window.BibleReader = {
             navigator.clipboard.writeText(copyStr).then(() => {
                 window.BibleApp.showToast(`${sorted.length}개 말씀 구절이 클립보드에 복사되었습니다!`);
             });
-        });
-    },
-
-    // 5. 메모 모달 저장/삭제 로직
-    setupNoteModal() {
-        document.getElementById('btn-save-note')?.addEventListener('click', async () => {
-            if (!this.selectedVerse) return;
-            const content = document.getElementById('note-textarea').value;
-            const unit = window.BibleApp.state.currentUnitCode;
-            const jeol = this.selectedVerse.jeol;
-
-            await window.BibleApp.fetchApi('/user/note', {
-                method: 'POST',
-                body: JSON.stringify({ unit_code: unit, jeol, content })
-            });
-
-            window.BibleApp.closeModal('modal-note');
-            await this.reload();
-            window.BibleApp.showToast('묵상 메모가 저장되었습니다.');
-        });
-
-        document.getElementById('btn-delete-note')?.addEventListener('click', async () => {
-            if (!this.selectedVerse) return;
-            const unit = window.BibleApp.state.currentUnitCode;
-            const jeol = this.selectedVerse.jeol;
-
-            await window.BibleApp.fetchApi('/user/note', {
-                method: 'POST',
-                body: JSON.stringify({ unit_code: unit, jeol, content: '' })
-            });
-
-            window.BibleApp.closeModal('modal-note');
-            await this.reload();
-            window.BibleApp.showToast('메모가 삭제되었습니다.');
         });
     },
 
