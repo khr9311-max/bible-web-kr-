@@ -114,15 +114,22 @@ body {
     line-height: 1.5;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: none;
-    transition: background-color var(--transition-smooth), color var(--transition-smooth);
+    text-rendering: optimizeSpeed;
 }
 
-/* Glassmorphism Effect */
+/* Glassmorphism Effect - 모바일 60fps 초경량 고성능 최적화 */
 .glass-panel {
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
+    transform: translateZ(0);
+}
+
+@media (min-width: 1024px) {
+    .glass-panel {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
 }
 
 /* ==========================================================================
@@ -141,6 +148,8 @@ body {
     z-index: 100;
     border-bottom: 1px solid var(--border-subtle);
     white-space: nowrap;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .header-left, .header-right, .header-center {
@@ -439,9 +448,10 @@ body {
     position: relative;
     padding: 6px 12px;
     border-radius: var(--radius-sm);
-    margin-bottom: 4px;
-    cursor: pointer;
     transition: background-color var(--transition-fast);
+    cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 36px;
 }
 
 .verse-item:hover {
@@ -790,6 +800,8 @@ body {
     border-radius: var(--radius-sm);
     transition: background-color var(--transition-fast);
     cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 40px;
 }
 
 .verse-compare-row:hover {
