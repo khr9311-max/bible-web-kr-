@@ -450,8 +450,6 @@ body {
     border-radius: var(--radius-sm);
     transition: background-color var(--transition-fast);
     cursor: pointer;
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 36px;
 }
 
 .verse-item:hover {
@@ -800,8 +798,6 @@ body {
     border-radius: var(--radius-sm);
     transition: background-color var(--transition-fast);
     cursor: pointer;
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 40px;
 }
 
 .verse-compare-row:hover {

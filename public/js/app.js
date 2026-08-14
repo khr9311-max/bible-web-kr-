@@ -471,6 +471,11 @@ window.BibleApp = {
             });
         });
 
+        document.querySelectorAll('.modal-card').forEach(card => {
+            card.addEventListener('click', (e) => e.stopPropagation());
+            card.addEventListener('touchend', (e) => e.stopPropagation());
+        });
+
         // 뷰어 설정 컨트롤러들 - 테마
         document.querySelectorAll('.theme-option-btn').forEach(btn => {
             btn.addEventListener('click', () => {
