@@ -1533,21 +1533,16 @@ body.focus-mode-active .floating-exit-focus-btn {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 200;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--transition-fast);
 }
 
 .modal-overlay.open {
-    opacity: 1;
-    pointer-events: auto;
+    display: flex;
 }
 
 .modal-card {

@@ -120,8 +120,8 @@ window.BibleReader = {
                 const priText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
                 const compText = this.cleanVerseHtml(v[compCol] || '');
 
-                const bookmarkBadge = v.bookmark ? `<i data-lucide="bookmark" class="verse-badge-icon icon-bookmark-tag"></i>` : '';
-                const noteBadge = v.note ? `<i data-lucide="edit-3" class="verse-badge-icon icon-note-tag"></i>` : '';
+                const bookmarkBadge = v.bookmark ? `<span class="verse-badge-icon icon-bookmark-tag" title="북마크됨">🔖</span>` : '';
+                const noteBadge = v.note ? `<span class="verse-badge-icon icon-note-tag" title="메모 있음">📝</span>` : '';
 
                 html += `
                     ${stitleRowHtml}
@@ -148,8 +148,8 @@ window.BibleReader = {
                 const stitleHtml = priStitle ? `<div class="section-stitle">${this.formatStitle(priStitle)}</div>` : '';
                 const verseText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
 
-                const bookmarkBadge = v.bookmark ? `<i data-lucide="bookmark" class="verse-badge-icon icon-bookmark-tag"></i>` : '';
-                const noteBadge = v.note ? `<i data-lucide="edit-3" class="verse-badge-icon icon-note-tag"></i>` : '';
+                const bookmarkBadge = v.bookmark ? `<span class="verse-badge-icon icon-bookmark-tag" title="북마크됨">🔖</span>` : '';
+                const noteBadge = v.note ? `<span class="verse-badge-icon icon-note-tag" title="메모 있음">📝</span>` : '';
 
                 html += `
                     ${stitleHtml}
@@ -165,8 +165,6 @@ window.BibleReader = {
 
         viewport.innerHTML = html;
         viewport.classList.toggle('mode-paragraph', window.BibleApp.state.viewMode === 'paragraph');
-
-        if (window.lucide) window.lucide.createIcons();
 
         // 절 클릭 이벤트 바인딩
         this.bindVerseClickEvents();
