@@ -178,13 +178,29 @@ window.BibleReader = {
 
     cleanVerseHtml(raw) {
         if (!raw) return '';
-        let txt = raw.replace(/<p>/gi, '').replace(/<\/p>/gi, '');
+        let txt = raw;
+
+        // 1. 절 중간에 포함된 <a ... href='lnk.spc?REF'>TEXT</a> 패턴을 안전한 .stitle-ref-link 로 변환! (404 이동 방지)
+        txt = txt.replace(/<a\s+[^>]*href=['"]lnk\.spc\?([^'"]+)['"][^>]*>([\s\S]*?)<\/a>/gi, (match, ref, text) => {
+            let cleanText = text.trim();
+            if (!cleanText.startsWith('[') && !cleanText.startsWith('(')) {
+                cleanText = `[${cleanText}]`;
+            }
+            return `<a class="stitle-ref-link" data-ref="${ref}" href="javascript:void(0)" title="병행 연관 말씀 보기">${cleanText}</a>`;
+        });
+
+        // 2. 절 중간에 포함된 <h2>제목</h2> 및 <h4>...</h4> 패턴을 정갈한 인라인 소제목으로 변환!
+        txt = txt.replace(/<h2>([\s\S]*?)<\/h2>/gi, '<div class="section-stitle inline-section-stitle">$1</div>');
+        txt = txt.replace(/<h4>([\s\S]*?)<\/h4>/gi, '<div class="inline-stitle-ref-wrap">$1</div>');
+
+        // 3. 문단 및 cite 태그 정리
+        txt = txt.replace(/<p>/gi, '').replace(/<\/p>/gi, '');
         txt = txt.replace(/<cite>\d+<\/cite>/gi, '');
         
-        // 관주(l)/각주(n)/구약인용구(c) 기호 마크업 변환 (예: <u class=c>M</u> -> <span class="crossref-mark">M</span>)
+        // 4. 관주(l)/각주(n)/구약인용구(c) 기호 마크업 변환
         txt = txt.replace(/<u class=["']?[lnc]["']?>([^<]+)<\/u>/gi, '<span class="crossref-mark" title="관주/인용/각주 보기">$1</span>');
         
-        // 예수님 말씀 인용구 태그
+        // 5. 예수님 말씀 인용구 태그
         txt = txt.replace(/<q>/gi, '<q class="jesus-word">');
         return txt;
     },
@@ -192,7 +208,11 @@ window.BibleReader = {
     // 복사 및 카드용 순수 텍스트 정제 (관주/각주/인용 기호 M, ㄱ, 1, 단락 기호 ○, HTML 태그 완전 제거)
     getPureVerseText(raw) {
         if (!raw) return '';
-        let txt = raw.replace(/<cite>\d+<\/cite>/gi, '');
+        let txt = raw;
+        // 중간 소제목 및 연관구절 링크 제거
+        txt = txt.replace(/<h\d>[\s\S]*?<\/h\d>/gi, '');
+        txt = txt.replace(/<a\s+[^>]*href=['"]lnk\.spc\?[^'"]+['"][^>]*>[\s\S]*?<\/a>/gi, '');
+        txt = txt.replace(/<cite>\d+<\/cite>/gi, '');
         // 관주/각주/인용 태그 및 내부 기호(M, ㄱ, 1 등) 제거
         txt = txt.replace(/<u class=["']?[lnc]["']?>[^<]*<\/u>/gi, '');
         txt = txt.replace(/<span class=["']?crossref-mark["']?[^>]*>[^<]*<\/span>/gi, '');
