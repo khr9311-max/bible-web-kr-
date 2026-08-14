@@ -370,6 +370,7 @@ window.BibleApp = {
             window.BibleCardGen?.prepareCard();
         });
         document.getElementById('btn-open-settings')?.addEventListener('click', () => this.openModal('modal-settings'));
+        document.getElementById('btn-open-family-links')?.addEventListener('click', () => this.openModal('modal-family-links'));
 
         // 원어 분해 모드 버튼
         document.getElementById('btn-open-strong')?.addEventListener('click', () => {

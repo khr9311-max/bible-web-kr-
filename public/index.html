@@ -108,6 +108,9 @@
             <button class="icon-action-btn" id="btn-open-settings" title="보기 설정 (글꼴/테마/문단)">
                 <i data-lucide="sliders"></i>
             </button>
+            <button class="icon-action-btn" id="btn-open-family-links" title="성경암송 · 챗봇 · 후원">
+                <i data-lucide="sparkles"></i>
+            </button>
         </div>
     </header>
 
@@ -163,6 +166,25 @@
                 <button class="bottom-page-btn" id="btn-bottom-next">
                     다음 장 <i data-lucide="arrow-right"></i>
                 </button>
+            </div>
+
+            <!-- Family Services & Donation Footer Bar (통독에 방해되지 않는 은은한 미니 바) -->
+            <div class="family-footer-bar">
+                <span class="family-footer-title">함께하는 성경 서비스</span>
+                <div class="family-footer-links">
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-footer-link" id="ft-link-72">
+                        <span>📖 성경암송 72구절</span>
+                    </a>
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-footer-link" id="ft-link-rom8">
+                        <span>✝️ 로마서 8장 암송</span>
+                    </a>
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-footer-link" id="ft-link-bot">
+                        <span>🤖 성경구절 챗봇</span>
+                    </a>
+                    <a href="https://qr.kakaopay.com" target="_blank" class="family-footer-link kakaopay-link" id="ft-link-pay">
+                        <span>💛 카카오페이 후원</span>
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -686,6 +708,66 @@
             <div class="modal-footer parallel-modal-footer">
                 <button class="btn-secondary" data-close="modal-parallel-verses">닫기</button>
                 <div class="parallel-goto-buttons-wrap" id="parallel-goto-buttons-wrap"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. Family Services & Support Modal (성경암송, 챗봇, 후원 모달) -->
+    <div class="modal-overlay" id="modal-family-links">
+        <div class="modal-card family-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="sparkles"></i> 함께하는 성경 서비스 & 후원</h3>
+                <button class="btn-close-modal" data-close="modal-family-links"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body family-modal-body">
+                <div class="family-cards-list">
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-service-card" id="link-memory-72">
+                        <div class="family-card-icon icon-bg-blue">
+                            <i data-lucide="layers"></i>
+                        </div>
+                        <div class="family-card-info">
+                            <strong>성경암송 72구절</strong>
+                            <span>신앙 성장을 위한 네비게이토 핵심 72구절 암송 훈련</span>
+                        </div>
+                        <i data-lucide="external-link" class="family-card-arrow"></i>
+                    </a>
+
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-service-card" id="link-romans-8">
+                        <div class="family-card-icon icon-bg-green">
+                            <i data-lucide="book-heart"></i>
+                        </div>
+                        <div class="family-card-info">
+                            <strong>로마서 8장 암송</strong>
+                            <span>생명의 성령의 법과 결코 정죄함이 없는 승리의 말씀 암송</span>
+                        </div>
+                        <i data-lucide="external-link" class="family-card-arrow"></i>
+                    </a>
+
+                    <a href="https://github.com/khr9311-max" target="_blank" class="family-service-card" id="link-bible-chatbot">
+                        <div class="family-card-icon icon-bg-purple">
+                            <i data-lucide="bot"></i>
+                        </div>
+                        <div class="family-card-info">
+                            <strong>성경구절 챗봇</strong>
+                            <span>내 마음과 상황에 꼭 맞는 성경 말씀을 찾아주는 AI 챗봇</span>
+                        </div>
+                        <i data-lucide="external-link" class="family-card-arrow"></i>
+                    </a>
+
+                    <a href="https://qr.kakaopay.com" target="_blank" class="family-service-card kakaopay-card" id="link-kakaopay">
+                        <div class="family-card-icon icon-bg-yellow">
+                            <i data-lucide="heart"></i>
+                        </div>
+                        <div class="family-card-info">
+                            <strong>카카오페이 후원하기</strong>
+                            <span>말씀성경 웹앱 개발과 서버 운영을 위한 따뜻한 응원</span>
+                        </div>
+                        <span class="kakaopay-badge">후원 💛</span>
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-close="modal-family-links">닫기</button>
             </div>
         </div>
     </div>
