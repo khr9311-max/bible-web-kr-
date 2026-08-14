@@ -130,25 +130,10 @@ class handler(http.server.BaseHTTPRequestHandler):
                 verse_data = dict(row)
 
                 cur.execute("""
-                    SELECT id, code, seq, original, translit, meaning, pos, pronun
-                    FROM strong_words
-                    WHERE unit_code = ? AND jeol = ?
-                    ORDER BY seq ASC;
-                """, (unit_code, jeol))
-                words = []
-                for w in cur.fetchall():
-                    wd = dict(w)
-                    code = wd.get("code")
-                    if code and code in strong_dict:
-                        wd["dict_info"] = strong_dict[code]
-                    words.append(wd)
-                verse_data["strongs"] = words
-
-                cur.execute("""
-                    SELECT target_unit, target_jeol_start, target_jeol_end, label, note
+                    SELECT version, unit_code, jeol, kind, mark, explains, link_ids
                     FROM cross_references
                     WHERE unit_code = ? AND jeol = ?
-                    ORDER BY seq ASC;
+                    ORDER BY id ASC;
                 """, (unit_code, jeol))
                 verse_data["cross_references"] = [dict(r) for r in cur.fetchall()]
 

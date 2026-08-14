@@ -1364,31 +1364,72 @@ body.focus-mode-active .floating-exit-focus-btn {
 }
 
 /* Cross Ref List in Panel */
-.crossref-entry-item {
+.crossref-entry-card {
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: 14px;
-    margin-bottom: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    transition: all var(--transition-fast);
+}
+
+.crossref-entry-card:hover {
+    border-color: var(--brand-primary);
+}
+
+.crossref-entry-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.crossref-mark-badge {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--brand-primary);
+}
+
+.crossref-version-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.crossref-explains-text {
+    font-size: 13.5px;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.crossref-chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.crossref-link-chip {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--brand-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
-.crossref-entry-item:hover {
+.crossref-link-chip:hover {
+    background: var(--brand-primary);
     border-color: var(--brand-primary);
+    color: white;
     transform: translateY(-1px);
-}
-
-.crossref-ref-tag {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--brand-primary);
-    margin-bottom: 4px;
-}
-
-.crossref-text {
-    font-size: 14px;
-    color: var(--text-secondary);
 }
 
 /* ==========================================================================
