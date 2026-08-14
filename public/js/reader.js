@@ -31,33 +31,44 @@ window.BibleReader = {
         const viewport = document.getElementById('verses-viewport');
         if (!viewport) return;
 
-        viewport.innerHTML = `
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>성경 말씀을 불러오는 중입니다...</p>
-            </div>
-        `;
+        // 이미 본문이 렌더링되어 있는 경우 빈 스피너로 전체를 날리지 않고 깜빡임 방지 (Seamless Transition)
+        const hasExistingContent = viewport.querySelector('.verse-item, .verse-compare-row');
+        if (!hasExistingContent) {
+            viewport.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>성경 말씀을 불러오는 중입니다...</p>
+                </div>
+            `;
+        } else {
+            viewport.style.opacity = '0.75';
+        }
 
         try {
             const data = await window.BibleApp.fetchApi(`/chapter/${unitCode}`);
             this.chapterData = data;
             this.renderVerses(data);
+            viewport.style.opacity = '1';
 
             // 통독 버튼 상태 갱신
             this.updateReadButtonState(data.is_read);
 
             // 목표 절로 스크롤
-            if (targetJeol) {
+            if (targetJeol && targetJeol > 1) {
                 setTimeout(() => {
                     this.scrollToVerse(targetJeol);
                 }, 100);
             }
         } catch (e) {
-            viewport.innerHTML = `
-                <div class="loading-state">
-                    <p style="color:var(--accent-rose);">말씀을 불러오지 못했습니다. 다시 시도해 주세요.</p>
-                </div>
-            `;
+            console.error('loadChapter error:', e);
+            viewport.style.opacity = '1';
+            if (!hasExistingContent) {
+                viewport.innerHTML = `
+                    <div class="loading-state">
+                        <p style="color:var(--accent-rose);">말씀을 불러오지 못했습니다. 다시 시도해 주세요.</p>
+                    </div>
+                `;
+            }
         }
     },
 

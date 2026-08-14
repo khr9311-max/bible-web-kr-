@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordbible-cache-v2';
+const CACHE_NAME = 'wordbible-cache-v3';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -38,10 +38,16 @@ self.addEventListener('activate', (e) => {
     self.clients.claim();
 });
 
-// Network-First 전략: 항상 최신 배포 코드를 가져오고, 오프라인일 때만 캐시를 사용
+// API 요청(/api/*)은 Service Worker의 개입 없이 100% 브라우저 네이티브 네트워크로 직접 통과!
 self.addEventListener('fetch', (e) => {
     if (e.request.method !== 'GET') return;
 
+    // API 요청은 Service Worker 가로채기 완전 제외 (안드로이드 Cache Quota 및 Reject 방지)
+    if (e.request.url.includes('/api/')) {
+        return;
+    }
+
+    // 정적 파일(HTML, CSS, JS)만 Network-First 처리
     e.respondWith(
         fetch(e.request)
             .then((networkRes) => {
