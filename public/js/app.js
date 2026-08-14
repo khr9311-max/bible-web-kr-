@@ -880,11 +880,14 @@ window.BibleApp = {
         }
     },
 
-    // 10. PWA Service Worker 등록
+    // 10. PWA Service Worker 등록 및 즉시 강제 갱신
     registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
+                navigator.serviceWorker.register('/sw.js').then((reg) => {
+                    // 배포 즉시 최신 버전 강제 체크
+                    reg.update();
+                }).catch(err => {
                     console.log('SW registration note:', err);
                 });
             });
