@@ -1,0 +1,22 @@
+{
+  "name": "말씀성경 - 스마트 다역본 성경 웹앱",
+  "short_name": "말씀성경",
+  "description": "다역본 대조, 원어 스트롱 코드 사전, 스마트 관주 탐색, 말씀 카드 제작, 맥체인 통독 플래너 및 오프라인 지원",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0c0e12",
+  "theme_color": "#12151b",
+  "icons": [
+    {
+      "src": "/icons/ic_20.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/ic_20.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

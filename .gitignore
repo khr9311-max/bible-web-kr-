@@ -1,0 +1,26 @@
+# Node Modules
+node_modules/
+server/node_modules/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Large binaries & APK & Uncompressed DB
+*.apk
+*갓피플*.apk
+extracted_tmp/
+extracted_tmp/**
+server/data/bible.db
+!server/data/bible.db.gz
+
+# Python & Build
+*.pyc
+__pycache__/
+.system_generated/
+scratch/
+
+# Logs
+*.log

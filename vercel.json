@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/(.*)", "destination": "/public/$1" }
+  ],
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "server/data/**"
+    }
+  }
+}

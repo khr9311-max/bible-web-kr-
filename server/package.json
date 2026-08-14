@@ -1,0 +1,16 @@
+{
+  "name": "wordbible-web",
+  "version": "1.0.0",
+  "description": "Premium Full-Stack WordBible Web Application & PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js",
+    "dev": "node --experimental-sqlite server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "author": "Antigravity",
+  "license": "ISC"
+}

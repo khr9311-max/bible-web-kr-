@@ -1,0 +1,212 @@
+{
+  "H7225": {
+    "original": "רֵאשִׁית",
+    "translit": "re'shiyth",
+    "pronounce": "레이쉬트",
+    "meaning": "처음, 시작, 으뜸, 첫 열매",
+    "definition": "시작, 최우선, 첫 번째의 것 (창 1:1 '태초에')"
+  },
+  "H430": {
+    "original": "אֱלֹהִים",
+    "translit": "elohiym",
+    "pronounce": "엘로힘",
+    "meaning": "하나님, 신(들)",
+    "definition": "창조주 하나님, 전능하신 참 신 (창 1:1)"
+  },
+  "H8064": {
+    "original": "שָׁמַיִם",
+    "translit": "shamayim",
+    "pronounce": "샤마임",
+    "meaning": "하늘, 창공, 천국",
+    "definition": "높은 곳, 하늘, 궁창 (창 1:1)"
+  },
+  "H776": {
+    "original": "אֶרֶץ",
+    "translit": "erets",
+    "pronounce": "에레츠",
+    "meaning": "땅, 지구, 나라, 흙",
+    "definition": "땅, 지구, 온 세상, 영토 (창 1:1)"
+  },
+  "H1254": {
+    "original": "בָּרָא",
+    "translit": "bara",
+    "pronounce": "바라",
+    "meaning": "창조하다, 짓다",
+    "definition": "무에서 유를 창조하다, 오직 하나님의 창조 행위에만 쓰이는 동사"
+  },
+  "H1961": {
+    "original": "הָיָה",
+    "translit": "hayah",
+    "pronounce": "하야",
+    "meaning": "있다, 되다, 일어나다",
+    "definition": "존재하다, 발생하다"
+  },
+  "H216": {
+    "original": "אוֹר",
+    "translit": "owr",
+    "pronounce": "오르",
+    "meaning": "빛, 광명",
+    "definition": "빛, 아침, 광채 (창 1:3 '빛이 있으라')"
+  },
+  "H3068": {
+    "original": "יְהוָה",
+    "translit": "Yehovah",
+    "pronounce": "여호와 / 야훼",
+    "meaning": "스스로 계신 자, 여호와",
+    "definition": "스스로 존재하는 자, 언약의 하나님"
+  },
+  "H136": {
+    "original": "אֲדֹנָי",
+    "translit": "Adonay",
+    "pronounce": "아도나이",
+    "meaning": "주님, 나의 주",
+    "definition": "통치자, 주인, 만유의 주"
+  },
+  "H2617": {
+    "original": "חֶסֶד",
+    "translit": "chesed",
+    "pronounce": "헤세드",
+    "meaning": "인자, 자비, 은혜, 언약적 사랑",
+    "definition": "변치 않는 하나님의 신실한 자비와 사랑"
+  },
+  "H7965": {
+    "original": "שָׁלוֹם",
+    "translit": "shalom",
+    "pronounce": "샬롬",
+    "meaning": "평강, 평안, 온전함",
+    "definition": "평화, 번영, 안녕, 완전한 조화"
+  },
+  "H5315": {
+    "original": "נֶפֶשׁ",
+    "translit": "nephesh",
+    "pronounce": "네페쉬",
+    "meaning": "영혼, 생명, 사람, 호흡",
+    "definition": "살아있는 존재, 생물, 목숨, 인격"
+  },
+  "H7307": {
+    "original": "רוּחַ",
+    "translit": "ruwach",
+    "pronounce": "루아흐",
+    "meaning": "영, 성령, 바람, 호흡",
+    "definition": "하나님의 영, 생명의 기운, 바람"
+  },
+  "H1285": {
+    "original": "בְּרִית",
+    "translit": "beriyth",
+    "pronounce": "베리트",
+    "meaning": "언약, 계약",
+    "definition": "하나님과 인간 사이의 구속적 약속"
+  },
+  "H6944": {
+    "original": "קֹדֶשׁ",
+    "translit": "qodesh",
+    "pronounce": "코데쉬",
+    "meaning": "거룩, 성결, 성소",
+    "definition": "구별됨, 거룩함, 봉헌된 것"
+  },
+  "G3056": {
+    "original": "λόγος",
+    "translit": "logos",
+    "pronounce": "로고스",
+    "meaning": "말씀, 도, 이성, 진리",
+    "definition": "말씀, 선포된 진리, 성육신하신 예수 그리스도 (요 1:1)"
+  },
+  "G2316": {
+    "original": "θεός",
+    "translit": "theos",
+    "pronounce": "데오스",
+    "meaning": "하나님, 신",
+    "definition": "유일하신 참 하나님 (요 1:1, 요 3:16)"
+  },
+  "G2424": {
+    "original": "Ἰησοῦς",
+    "translit": "Iesous",
+    "pronounce": "예수스 / 예수",
+    "meaning": "예수, 구원자",
+    "definition": "여호와는 구원이시다 (마 1:21)"
+  },
+  "G5547": {
+    "original": "Χριστός",
+    "translit": "Christos",
+    "pronounce": "크리스토스 / 그리스도",
+    "meaning": "그리스도, 메시야",
+    "definition": "기름 부음 받은 자 (마 16:16)"
+  },
+  "G2962": {
+    "original": "κύριος",
+    "translit": "kurios",
+    "pronounce": "퀴리오스 / 주",
+    "meaning": "주, 통치자, 주인",
+    "definition": "만왕의 왕, 주권자이신 하나님/예수님"
+  },
+  "G4151": {
+    "original": "πνεῦμα",
+    "translit": "pneuma",
+    "pronounce": "프뉴마 / 영, 성령",
+    "meaning": "영, 성령, 바람, 숨",
+    "definition": "성령 하나님, 사람의 영혼"
+  },
+  "G26": {
+    "original": "ἀγάπη",
+    "translit": "agape",
+    "pronounce": "아가페",
+    "meaning": "사랑, 신적 사랑",
+    "definition": "조건 없는 헌신적 하나님의 사랑 (고전 13장, 요일 4:8)"
+  },
+  "G4102": {
+    "original": "πίστις",
+    "translit": "pistis",
+    "pronounce": "피스티스",
+    "meaning": "믿음, 신앙, 확신",
+    "definition": "하나님을 향한 굳건한 신뢰와 복종 (히 11:1)"
+  },
+  "G5485": {
+    "original": "χάρις",
+    "translit": "charis",
+    "pronounce": "카리스",
+    "meaning": "은혜, 호의, 감사",
+    "definition": "값없이 주시는 하나님의 구원의 선물 (엡 2:8)"
+  },
+  "G1680": {
+    "original": "ἐλπίς",
+    "translit": "elpis",
+    "pronounce": "엘피스",
+    "meaning": "소망, 희망, 기대",
+    "definition": "그리스도 안에서의 영원한 기대와 확신"
+  },
+  "G2222": {
+    "original": "ζωή",
+    "translit": "zoe",
+    "pronounce": "조에",
+    "meaning": "생명, 영생",
+    "definition": "하나님이 주시는 영원한 참 생명 (요 3:16, 요 14:6)"
+  },
+  "G2889": {
+    "original": "κόσμος",
+    "translit": "kosmos",
+    "pronounce": "코스모스",
+    "meaning": "세상, 우주, 인류",
+    "definition": "하나님이 지으시고 사랑하신 세상 (요 3:16)"
+  },
+  "G4991": {
+    "original": "σωτηρία",
+    "translit": "soteria",
+    "pronounce": "소테리아",
+    "meaning": "구원, 해방, 온전함",
+    "definition": "죄와 사망으로부터의 구원과 회복"
+  },
+  "G932": {
+    "original": "βασιλεία",
+    "translit": "basileia",
+    "pronounce": "바실레이아",
+    "meaning": "나라, 왕국, 통치",
+    "definition": "하나님의 나라, 천국 (마 6:33)"
+  },
+  "G2098": {
+    "original": "εὐαγγέλιον",
+    "translit": "euaggelion",
+    "pronounce": "유앙겔리온",
+    "meaning": "복음, 기쁜 소식",
+    "definition": "예수 그리스도를 통한 구원의 기쁜 소식"
+  }
+}

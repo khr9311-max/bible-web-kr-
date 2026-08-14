@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>말씀성경 - 스마트 다역본 뷰어 & 통독 PWA</title>
+    <meta name="description" content="말씀성경 웹 애플리케이션: 다역본 대조, 원어 스트롱 코드 사전, 스마트 관주 탐색, 말씀 카드 제작, 맥체인 통독 플래너 및 오프라인 PWA 지원">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#12151b">
+
+    <!-- Fonts: Pretendard, Noto Serif KR, Nanum Myeongjo, Nanum Gothic, EB Garamond, Inter, Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300;400;500;600;700&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@300;400;600;700&family=Pretendard:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header glass-panel" id="main-header">
+        <div class="header-left">
+            <button class="nav-btn brand-btn" id="btn-brand" title="오늘의 말씀 / 홈">
+                <span class="brand-badge">WB</span>
+                <span class="brand-title">말씀성경</span>
+            </button>
+            
+            <button class="nav-pill book-selector-btn" id="btn-open-nav" title="성경 책 / 장 선택">
+                <i data-lucide="book-open"></i>
+                <span id="current-location-text" class="location-text">창세기 1장</span>
+                <i data-lucide="chevron-down" class="icon-small"></i>
+            </button>
+
+            <button class="nav-pill version-selector-pill" id="btn-open-versions" title="성경 번역본 선택 (10개 역본)">
+                <span id="current-version-pill-text" class="version-pill-text">개역개정</span>
+                <i data-lucide="chevron-down" class="icon-small"></i>
+            </button>
+
+            <!-- 상시 노출 대조 모드 빠른 토글 버튼 (모바일/PC 공통) -->
+            <button class="nav-pill compare-pill-btn" id="btn-quick-toggle-compare" title="2개 번역본 나란히 대조 보기 토글">
+                <i data-lucide="columns-2" class="icon-small"></i>
+                <span id="quick-compare-text">대조</span>
+            </button>
+        </div>
+
+        <div class="header-center">
+            <!-- Multi-Version Selectors -->
+            <div class="version-selector-group">
+                <select id="select-primary-ver" class="version-select" title="기본 번역본">
+                    <option value="rv" selected>개역개정 (KRV)</option>
+                    <option value="ko">개역한글 (1961)</option>
+                    <option value="ez">쉬운성경 (EASY)</option>
+                    <option value="wr">우리말성경 (DURANNO)</option>
+                    <option value="nw">새번역 (STD)</option>
+                    <option value="nv">NIV (New Int)</option>
+                    <option value="nt">NLT (Living)</option>
+                    <option value="es">ESV (Standard)</option>
+                    <option value="nb">NASB (American)</option>
+                    <option value="kj">KJV (King James)</option>
+                </select>
+
+                <div class="compare-toggle-wrap">
+                    <label class="compare-toggle-label" title="대조 역본 켜기/끄기">
+                        <input type="checkbox" id="chk-compare-mode">
+                        <span class="toggle-switch"></span>
+                        <span class="toggle-text">대조</span>
+                    </label>
+                </div>
+
+                <select id="select-compare-ver" class="version-select" title="대조 번역본" style="display: none;">
+                    <option value="nv" selected>NIV (New Int)</option>
+                    <option value="es">ESV (Standard)</option>
+                    <option value="nt">NLT (Living)</option>
+                    <option value="nb">NASB (American)</option>
+                    <option value="kj">KJV (King James)</option>
+                    <option value="rv">개역개정 (KRV)</option>
+                    <option value="ko">개역한글 (1961)</option>
+                    <option value="ez">쉬운성경 (EASY)</option>
+                    <option value="wr">우리말성경 (DURANNO)</option>
+                    <option value="nw">새번역 (STD)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <button class="icon-action-btn" id="btn-toggle-tts" title="음성 낭독 (TTS) 플레이어 열기/닫기">
+                <i data-lucide="volume-2"></i>
+            </button>
+            <button class="icon-action-btn" id="btn-toggle-focus" title="성경 본문만 보기 (집중 모드)">
+                <i data-lucide="maximize-2"></i>
+            </button>
+            <button class="icon-action-btn" id="btn-open-strong" title="원어 성경 분해 모드 토글">
+                <span class="strong-icon-badge">원어</span>
+            </button>
+            <button class="icon-action-btn" id="btn-open-search" title="성경 검색 (Ctrl+F)">
+                <i data-lucide="search"></i>
+            </button>
+            <button class="icon-action-btn" id="btn-open-reading" title="통독 플래너 & 진도표">
+                <i data-lucide="check-circle-2"></i>
+            </button>
+            <button class="icon-action-btn" id="btn-open-card-gen" title="말씀 이미지 카드 생성">
+                <i data-lucide="image"></i>
+            </button>
+            <button class="icon-action-btn" id="btn-open-settings" title="보기 설정 (글꼴/테마/문단)">
+                <i data-lucide="sliders"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Floating Exit Focus Mode Button -->
+    <button class="floating-exit-focus-btn" id="btn-exit-focus" title="집중 모드 해제">
+        <i data-lucide="minimize-2"></i>
+        <span>전체 화면 닫기</span>
+    </button>
+
+    <!-- Main Container -->
+    <main class="app-main-layout">
+        <!-- Floating Chapter Pager (Left / Right Prev/Next) -->
+        <button class="chapter-nav-btn prev-chapter-btn" id="btn-prev-chapter" title="이전 장 (단축키: ←)">
+            <i data-lucide="chevron-left"></i>
+        </button>
+        <button class="chapter-nav-btn next-chapter-btn" id="btn-next-chapter" title="다음 장 (단축키: →)">
+            <i data-lucide="chevron-right"></i>
+        </button>
+
+        <!-- Scripture Content Area -->
+        <div class="scripture-container" id="scripture-scroll-container">
+            <!-- Chapter Header Info -->
+            <div class="chapter-meta-banner">
+                <div class="chapter-meta-left">
+                    <h1 class="chapter-full-title" id="chapter-title">창세기 1장</h1>
+                    <span class="chapter-subtitle" id="chapter-subtitle">구약 / 율법서</span>
+                </div>
+                <div class="chapter-meta-actions">
+                    <button class="pill-btn read-check-btn" id="btn-toggle-read">
+                        <i data-lucide="circle-check"></i>
+                        <span id="read-btn-label">통독 완료 체크</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Verse List Grid (Single / Compare Split View) -->
+            <div class="verses-viewport" id="verses-viewport">
+                <!-- Verses will be dynamically injected here -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>성경 말씀을 불러오는 중입니다...</p>
+                </div>
+            </div>
+
+            <!-- Chapter Bottom Pagination Bar -->
+            <div class="chapter-footer-nav">
+                <button class="bottom-page-btn" id="btn-bottom-prev">
+                    <i data-lucide="arrow-left"></i> 이전 장
+                </button>
+                <button class="bottom-page-btn primary-check" id="btn-bottom-check-next">
+                    <i data-lucide="check-check"></i> 통독 체크 후 다음 장
+                </button>
+                <button class="bottom-page-btn" id="btn-bottom-next">
+                    다음 장 <i data-lucide="arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Side Panel (Original Language Strong & Cross Reference) -->
+        <aside class="side-inspect-panel" id="side-inspect-panel">
+            <div class="side-panel-header">
+                <h3 id="side-panel-title">
+                    <i data-lucide="book-marked"></i> <span id="side-title-text">원어 스트롱 분해</span>
+                </h3>
+                <button class="btn-close-panel" id="btn-close-side-panel"><i data-lucide="x"></i></button>
+            </div>
+            <div class="side-panel-content" id="side-panel-content">
+                <div class="panel-empty-state">
+                    <i data-lucide="mouse-pointer-click"></i>
+                    <p>본문에서 절 또는 단어를 클릭하면<br>원어 스트롱 분해 및 관주 참조 구절이 표시됩니다.</p>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Floating Verse Selection Toolbar (오리지널 1줄 플로팅 알약 툴바) -->
+    <div class="floating-selection-toolbar" id="verse-action-toolbar">
+        <div class="toolbar-header">
+            <span class="selected-verse-label" id="toolbar-verse-label">창세기 1:1</span>
+            <span class="selected-count-badge" id="toolbar-verse-count" style="display:none;">1개 절</span>
+            <button class="btn-clear-selection" id="btn-clear-selection" title="선택 해제"><i data-lucide="x"></i></button>
+        </div>
+        <div class="toolbar-actions">
+            <!-- Highlight color picker -->
+            <div class="highlight-picker">
+                <button class="color-dot color-yellow" data-color="yellow" title="노란 형광펜"></button>
+                <button class="color-dot color-green" data-color="green" title="연두 형광펜"></button>
+                <button class="color-dot color-pink" data-color="pink" title="핑크 형광펜"></button>
+                <button class="color-dot color-cyan" data-color="cyan" title="하늘 형광펜"></button>
+                <button class="color-dot color-none" data-color="none" title="형광펜 지우기"><i data-lucide="ban"></i></button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <button class="toolbar-btn" id="btn-action-tts" title="선택 구절 음성 낭독"><i data-lucide="volume-2"></i> 낭독</button>
+            <button class="toolbar-btn" id="btn-action-bookmark" title="북마크"><i data-lucide="bookmark"></i> 북마크</button>
+            <button class="toolbar-btn" id="btn-action-note" title="묵상 메모"><i data-lucide="edit-3"></i> 메모</button>
+            <button class="toolbar-btn" id="btn-action-card" title="말씀 카드"><i data-lucide="image"></i> 카드</button>
+            <button class="toolbar-btn" id="btn-action-strong" title="원어 사전"><i data-lucide="languages"></i> 원어</button>
+            <button class="toolbar-btn" id="btn-action-crossref" title="관주"><i data-lucide="git-fork"></i> 관주</button>
+            <button class="toolbar-btn" id="btn-action-copy" title="구절 복사"><i data-lucide="copy"></i> 복사</button>
+        </div>
+    </div>
+
+    <!-- Audio Player Bar (Bottom Floating Audio & TTS Controller) -->
+    <div class="floating-audio-bar glass-panel" id="floating-audio-bar">
+        <div class="audio-left">
+            <div class="audio-indicator" id="audio-wave-anim">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="audio-track-info">
+                <div class="audio-current-title" id="audio-now-title">성경 음성 낭독 (TTS)</div>
+                <div class="audio-current-verse" id="audio-now-verse">창세기 1장 1절 읽는 중...</div>
+            </div>
+        </div>
+        <div class="audio-controls">
+            <button class="audio-ctrl-btn" id="btn-audio-prev" title="이전 절"><i data-lucide="skip-back"></i></button>
+            <button class="audio-ctrl-btn play-btn" id="btn-audio-play" title="재생 / 일시정지"><i data-lucide="play" id="audio-play-icon"></i></button>
+            <button class="audio-ctrl-btn" id="btn-audio-next" title="다음 절"><i data-lucide="skip-forward"></i></button>
+            <button class="audio-ctrl-btn" id="btn-audio-stop" title="정지"><i data-lucide="square"></i></button>
+        </div>
+        <div class="audio-right">
+            <select id="audio-speed-select" class="speed-select" title="낭독 배속">
+                <option value="0.8">0.8x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.2">1.2x</option>
+                <option value="1.5">1.5x</option>
+            </select>
+            <button class="icon-btn-ghost" id="btn-audio-close" title="오디오 바 닫기"><i data-lucide="x"></i></button>
+        </div>
+    </div>
+
+    <!-- ================= MODALS & DRAWERS ================= -->
+
+    <!-- 1. Book / Chapter Navigator Drawer Modal -->
+    <div class="modal-overlay" id="modal-navigator">
+        <div class="modal-card nav-modal-card">
+            <div class="modal-header">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-tab="OT">구약 (39권)</button>
+                    <button class="nav-tab" data-tab="NT">신약 (27권)</button>
+                </div>
+                <button class="btn-close-modal" data-close="modal-navigator"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body nav-modal-body">
+                <!-- Step 1: Books Grid -->
+                <div class="nav-step-view" id="nav-books-view">
+                    <div class="books-category-group" id="books-grid-container">
+                        <!-- Dynamic Book Buttons -->
+                    </div>
+                </div>
+                <!-- Step 2: Chapter Selector Grid -->
+                <div class="nav-step-view" id="nav-chapters-view" style="display:none;">
+                    <div class="chapter-select-header">
+                        <button class="back-to-books-btn" id="btn-nav-back-books">
+                            <i data-lucide="arrow-left"></i> <span id="nav-selected-book-name">창세기</span>
+                        </button>
+                        <span class="chapter-count-hint" id="nav-selected-book-chapters">총 50장</span>
+                    </div>
+                    <div class="chapters-grid" id="chapters-grid-container">
+                        <!-- Dynamic Chapter Number Buttons (1, 2, 3...) -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Search Modal -->
+    <div class="modal-overlay" id="modal-search">
+        <div class="modal-card search-modal-card">
+            <div class="modal-header search-modal-header">
+                <div class="search-input-box">
+                    <i data-lucide="search" class="search-box-icon"></i>
+                    <input type="text" id="search-input" placeholder="성경 구절이나 키워드 검색 (예: 빛이 있으라, 사랑, 믿음)" autocomplete="off">
+                    <button class="btn-clear-search" id="btn-clear-search" style="display:none;"><i data-lucide="x"></i></button>
+                </div>
+                <button class="btn-close-modal" data-close="modal-search"><i data-lucide="x"></i></button>
+            </div>
+            <div class="search-filter-bar">
+                <div class="search-quick-tags">
+                    <button class="search-tag" data-kw="태초에">태초에</button>
+                    <button class="search-tag" data-kw="빛이 있으라">빛이 있으라</button>
+                    <button class="search-tag" data-kw="하나님이 세상을">하나님이 세상을</button>
+                    <button class="search-tag" data-kw="여호와는 나의 목자">여호와는 나의 목자</button>
+                    <button class="search-tag" data-kw="사랑은">사랑은</button>
+                    <button class="search-tag" data-kw="믿음 소망 사랑">믿음 소망 사랑</button>
+                </div>
+                <div class="search-stats" id="search-stats-text">검색어를 입력하세요.</div>
+            </div>
+            <div class="modal-body search-results-body" id="search-results-list">
+                <div class="empty-search-state">
+                    <i data-lucide="sparkles"></i>
+                    <p>성경 66권 전체 31,105구절에서 즉시 검색됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Verse Card Generator Modal -->
+    <div class="modal-overlay" id="modal-card-gen">
+        <div class="modal-card card-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="image"></i> 말씀 이미지 카드 만들기</h3>
+                <button class="btn-close-modal" data-close="modal-card-gen"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body card-gen-body">
+                <div class="card-preview-container">
+                    <canvas id="card-canvas" width="1080" height="1080"></canvas>
+                </div>
+                <div class="card-controls-panel">
+                    <div class="control-group">
+                        <label>말씀 구절 텍스트</label>
+                        <textarea id="card-text-input" rows="3" placeholder="카드에 담을 성경 구절을 입력하세요."></textarea>
+                    </div>
+                    <div class="control-group">
+                        <label>성경 출처</label>
+                        <input type="text" id="card-ref-input" placeholder="예: 요한복음 3:16">
+                    </div>
+                    <div class="control-group">
+                        <label>배경 스타일</label>
+                        <div class="bg-preset-grid">
+                            <button class="bg-dot bg-grad-1 active" data-bg="grad1"></button>
+                            <button class="bg-dot bg-grad-2" data-bg="grad2"></button>
+                            <button class="bg-dot bg-grad-3" data-bg="grad3"></button>
+                            <button class="bg-dot bg-grad-4" data-bg="grad4"></button>
+                            <button class="bg-dot bg-grad-5" data-bg="grad5"></button>
+                            <button class="bg-dot bg-dark-1" data-bg="dark1"></button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>글자 크기 & 정렬</label>
+                        <div class="card-font-ctrls">
+                            <input type="range" id="card-font-slider" min="30" max="70" value="44">
+                            <div class="align-btns">
+                                <button class="btn-mini active" data-align="center"><i data-lucide="align-center"></i></button>
+                                <button class="btn-mini" data-align="left"><i data-lucide="align-left"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action-btns">
+                        <button class="primary-action-btn" id="btn-download-card">
+                            <i data-lucide="download"></i> 카드 이미지 다운로드 (PNG)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Reading Tracker Modal (통독 플래너) -->
+    <div class="modal-overlay" id="modal-reading">
+        <div class="modal-card reading-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="chart-pie"></i> 성경 통독 플래너 & 진도표</h3>
+                <button class="btn-close-modal" data-close="modal-reading"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body reading-modal-body">
+                <!-- Progress Summary Card -->
+                <div class="progress-summary-card">
+                    <div class="progress-donut-wrap">
+                        <div class="donut-circle" id="donut-progress-display">
+                            <span class="donut-percent" id="total-percent-text">0.0%</span>
+                            <span class="donut-sub">전체 1,189장</span>
+                        </div>
+                    </div>
+                    <div class="progress-details">
+                        <div class="prog-row">
+                            <span>전체 읽은 장:</span>
+                            <strong id="stat-read-total">0 / 1189장</strong>
+                        </div>
+                        <div class="prog-row">
+                            <span>구약 진도율:</span>
+                            <strong id="stat-ot-prog">0% (0/929장)</strong>
+                        </div>
+                        <div class="prog-row">
+                            <span>신약 진도율:</span>
+                            <strong id="stat-nt-prog">0% (0/260장)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's M'Cheyne Reading Schedule -->
+                <div class="mcheyne-section">
+                    <div class="section-title-bar">
+                        <h4>오늘의 맥체인 성경 읽기표</h4>
+                        <span class="day-badge" id="mcheyne-day-badge">Day 1</span>
+                    </div>
+                    <div class="mcheyne-grid" id="mcheyne-chapters-list">
+                        <!-- Dynamic Today's Plan Cards -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Viewer Settings Modal -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal-card settings-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="sliders"></i> 성경 보기 및 서체 설정</h3>
+                <button class="btn-close-modal" data-close="modal-settings"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body settings-body">
+                <!-- 1. 화면 테마 -->
+                <div class="setting-item">
+                    <label class="setting-title">화면 테마</label>
+                    <div class="theme-select-grid">
+                        <button class="theme-option-btn active" data-theme="dark">
+                            <i data-lucide="moon"></i> 다크 모드
+                        </button>
+                        <button class="theme-option-btn" data-theme="sepia">
+                            <i data-lucide="coffee"></i> 세피아
+                        </button>
+                        <button class="theme-option-btn" data-theme="light">
+                            <i data-lucide="sun"></i> 라이트
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. 붙여읽기 방식 (절 단위 vs 문단 단위) -->
+                <div class="setting-item">
+                    <label class="setting-title">본문 줄바꿈 및 붙여읽기 방식</label>
+                    <div class="viewmode-select-grid">
+                        <button class="viewmode-btn active" data-mode="verse">
+                            <i data-lucide="align-left"></i>
+                            <div>
+                                <strong>절 단위 (줄바꿈)</strong>
+                                <span>절마다 한 줄씩 보기</span>
+                            </div>
+                        </button>
+                        <button class="viewmode-btn" data-mode="paragraph">
+                            <i data-lucide="align-justify"></i>
+                            <div>
+                                <strong>문단 단위 (붙여읽기)</strong>
+                                <span>책처럼 연속 줄글로 읽기</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. 글자 크기 & 줄 간격 -->
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <label>글자 크기</label>
+                        <span class="val-display" id="font-size-val">19px</span>
+                    </div>
+                    <input type="range" id="slider-font-size" min="14" max="32" value="19" step="1">
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-label-row">
+                        <label>줄 간격</label>
+                        <span class="val-display" id="line-height-val">1.9</span>
+                    </div>
+                    <input type="range" id="slider-line-height" min="1.4" max="2.8" value="1.9" step="0.1">
+                </div>
+
+                <!-- 4. 한글 서체 선택 -->
+                <div class="setting-item">
+                    <label class="setting-title">한글 본문 서체</label>
+                    <div class="font-select-grid">
+                        <button class="font-choice-btn active" data-font="noto-serif" style="font-family:'Noto Serif KR', serif;">
+                            본명조 (Noto Serif)
+                        </button>
+                        <button class="font-choice-btn" data-font="nanum-myeongjo" style="font-family:'Nanum Myeongjo', serif;">
+                            나눔명조
+                        </button>
+                        <button class="font-choice-btn" data-font="pretendard" style="font-family:'Pretendard', sans-serif;">
+                            프리텐다드 (Pretendard)
+                        </button>
+                        <button class="font-choice-btn" data-font="noto-sans" style="font-family:'Noto Sans KR', sans-serif;">
+                            본고딕 (Noto Sans)
+                        </button>
+                        <button class="font-choice-btn" data-font="nanum-gothic" style="font-family:'Nanum Gothic', sans-serif;">
+                            나눔고딕
+                        </button>
+                        <button class="font-choice-btn" data-font="system" style="font-family:-apple-system, sans-serif;">
+                            시스템 기본체
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. 영문 서체 선택 (NIV / KJV / ESV) -->
+                <div class="setting-item">
+                    <label class="setting-title">영문 번역본 서체</label>
+                    <div class="font-select-grid">
+                        <button class="font-eng-btn active" data-font-eng="eb-garamond" style="font-family:'EB Garamond', serif;">
+                            EB Garamond
+                        </button>
+                        <button class="font-eng-btn" data-font-eng="georgia" style="font-family:Georgia, serif;">
+                            Georgia
+                        </button>
+                        <button class="font-eng-btn" data-font-eng="inter" style="font-family:'Inter', sans-serif;">
+                            Inter
+                        </button>
+                        <button class="font-eng-btn" data-font-eng="outfit" style="font-family:'Outfit', sans-serif;">
+                            Outfit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 6. 표시 옵션 -->
+                <div class="setting-item">
+                    <label class="setting-title">상세 표시 옵션</label>
+                    <div class="option-check-list">
+                        <label class="check-box-item">
+                            <input type="checkbox" id="chk-show-stitles" checked>
+                            <span>단락 소제목 표시 (예: 천지 창조)</span>
+                        </label>
+                        <label class="check-box-item">
+                            <input type="checkbox" id="chk-show-crossref-marks" checked>
+                            <span>관주 및 각주 기호 표시 (ㄱ, 1 등)</span>
+                        </label>
+                        <label class="check-box-item">
+                            <input type="checkbox" id="chk-show-verse-nums" checked>
+                            <span>절 번호 표시 (1, 2, 3...)</span>
+                        </label>
+                        <label class="check-box-item">
+                            <input type="checkbox" id="chk-show-red-letters" checked>
+                            <span style="color:var(--accent-rose); font-weight:600;">예수님 말씀 별색 (붉은색) 표시</span>
+                        </label>
+                        <label class="check-box-item">
+                            <input type="checkbox" id="chk-focus-mode">
+                            <span>성경 본문만 보기 (집중 모드)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. User Note Modal (메모 작성) -->
+    <div class="modal-overlay" id="modal-note">
+        <div class="modal-card note-modal-card">
+            <div class="modal-header">
+                <h3 id="note-modal-title"><i data-lucide="edit-3"></i> 묵상 메모 작성</h3>
+                <button class="btn-close-modal" data-close="modal-note"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body note-body">
+                <div class="note-target-verse" id="note-verse-text">창세기 1:1</div>
+                <textarea id="note-textarea" rows="6" placeholder="이 구절에 대한 묵상과 기도를 기록해보세요..."></textarea>
+                <div class="modal-actions-footer">
+                    <button class="btn-secondary" id="btn-delete-note" style="display:none;"><i data-lucide="trash-2"></i> 삭제</button>
+                    <button class="btn-primary" id="btn-save-note"><i data-lucide="check"></i> 메모 저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Version Selector Modal (번역본 선택 모달 - 2개 선택 후 적용) -->
+    <div class="modal-overlay" id="modal-versions">
+        <div class="modal-card versions-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="languages"></i> 성경 번역본 선택</h3>
+                <button class="btn-close-modal" data-close="modal-versions"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body versions-modal-body">
+                <!-- 현재 선택 상태 요약 바 -->
+                <div class="version-selection-summary-bar">
+                    <div class="summary-col">
+                        <span class="summary-label">기본 번역본</span>
+                        <strong class="summary-val" id="summary-primary-val">개역개정</strong>
+                    </div>
+                    <div class="summary-divider">
+                        <i data-lucide="arrow-right-left" class="icon-small"></i>
+                    </div>
+                    <div class="summary-col">
+                        <span class="summary-label">대조 번역본</span>
+                        <strong class="summary-val" id="summary-compare-val">대조 안 함</strong>
+                    </div>
+                </div>
+
+                <!-- 탭: 기본 번역본 vs 대조 번역본 -->
+                <div class="versions-tab-bar">
+                    <button class="version-tab-btn active" id="tab-primary-ver">
+                        <span>1. 기본 번역본 선택</span>
+                    </button>
+                    <button class="version-tab-btn" id="tab-compare-ver">
+                        <span>2. 대조 번역본 선택</span>
+                    </button>
+                </div>
+
+                <!-- 대조 모드 활성화 체크 -->
+                <div class="version-compare-switch-row" id="wrap-compare-toggle" style="display:none;">
+                    <label class="check-box-item">
+                        <input type="checkbox" id="chk-modal-compare-mode">
+                        <span><strong>2개 번역본 나란히(대조) 보기</strong> 활성화</span>
+                    </label>
+                </div>
+
+                <!-- 한글 번역본 섹션 -->
+                <div class="version-group-section">
+                    <div class="version-group-title">한글 번역본 (5종)</div>
+                    <div class="version-cards-grid" id="korean-versions-grid">
+                        <button class="version-card-btn active" data-ver="rv">
+                            <span class="ver-badge">표준</span>
+                            <strong class="ver-name">개역개정</strong>
+                            <span class="ver-desc">한국교회 공인 표준 번역본 (KRV)</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="ko">
+                            <span class="ver-badge">전통</span>
+                            <strong class="ver-name">개역한글</strong>
+                            <span class="ver-desc">은혜로운 전통 한글 성경 (1961)</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="ez">
+                            <span class="ver-badge">현대어</span>
+                            <strong class="ver-name">쉬운성경</strong>
+                            <span class="ver-desc">청소년·초신자를 위한 알기 쉬운 번역</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="wr">
+                            <span class="ver-badge">두란노</span>
+                            <strong class="ver-name">우리말성경</strong>
+                            <span class="ver-desc">원문에 충실하며 매끄러운 현대어 번역</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="nw">
+                            <span class="ver-badge">공동</span>
+                            <strong class="ver-name">새번역</strong>
+                            <span class="ver-desc">표준새번역 개정판 (대한성서공회)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 영문 번역본 섹션 -->
+                <div class="version-group-section">
+                    <div class="version-group-title">영문 번역본 (5종)</div>
+                    <div class="version-cards-grid" id="english-versions-grid">
+                        <button class="version-card-btn" data-ver="nv">
+                            <span class="ver-badge">글로벌 1위</span>
+                            <strong class="ver-name">NIV</strong>
+                            <span class="ver-desc">New International Version</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="es">
+                            <span class="ver-badge">직역 표준</span>
+                            <strong class="ver-name">ESV</strong>
+                            <span class="ver-desc">English Standard Version</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="nt">
+                            <span class="ver-badge">쉬운 영문</span>
+                            <strong class="ver-name">NLT</strong>
+                            <span class="ver-desc">New Living Translation</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="nb">
+                            <span class="ver-badge">원어 직역</span>
+                            <strong class="ver-name">NASB</strong>
+                            <span class="ver-desc">New American Standard Bible</span>
+                        </button>
+                        <button class="version-card-btn" data-ver="kj">
+                            <span class="ver-badge">클래식</span>
+                            <strong class="ver-name">KJV</strong>
+                            <span class="ver-desc">King James Version</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 모달 하단 적용 버튼 -->
+            <div class="modal-footer version-modal-footer">
+                <button class="btn-secondary" data-close="modal-versions">취소</button>
+                <button class="btn-primary" id="btn-apply-versions">
+                    <i data-lucide="check"></i> 선택한 번역본 적용하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. Parallel Passages Modal (소제목 연관 구절 팝업 모달) -->
+    <div class="modal-overlay" id="modal-parallel-verses">
+        <div class="modal-card parallel-modal-card">
+            <div class="modal-header">
+                <h3><i data-lucide="git-compare"></i> <span id="parallel-modal-title">병행 연관 말씀</span></h3>
+                <button class="btn-close-modal" data-close="modal-parallel-verses"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body parallel-modal-body" id="parallel-modal-body">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>연관 성경 말씀을 불러오는 중입니다...</p>
+                </div>
+            </div>
+            <div class="modal-footer parallel-modal-footer">
+                <button class="btn-secondary" data-close="modal-parallel-verses">닫기</button>
+                <div class="parallel-goto-buttons-wrap" id="parallel-goto-buttons-wrap"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- App JavaScript Scripts -->
+    <script src="/js/app.js"></script>
+    <script src="/js/reader.js"></script>
+    <script src="/js/navigator.js"></script>
+    <script src="/js/strong.js"></script>
+    <script src="/js/cross_ref.js"></script>
+    <script src="/js/card_generator.js"></script>
+    <script src="/js/reading_tracker.js"></script>
+    <script src="/js/search.js"></script>
+</body>
+</html>
