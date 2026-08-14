@@ -15,8 +15,8 @@ window.BibleApp = {
         isCompareMode: false,
         isStrongMode: false,
         theme: 'dark',
-        fontSize: 19,
-        lineHeight: 1.9,
+        fontSize: 14,
+        lineHeight: 1.6,
         viewMode: 'verse', // 'verse' (절 단위) | 'paragraph' (문단 단위 붙여읽기)
         koreanFont: 'noto-serif',
         englishFont: 'eb-garamond',
@@ -490,17 +490,33 @@ window.BibleApp = {
             });
         });
 
-        // 글자 크기 & 줄 간격
-        document.getElementById('slider-font-size')?.addEventListener('input', (e) => {
-            this.state.fontSize = parseInt(e.target.value, 10);
-            document.getElementById('font-size-val').textContent = `${this.state.fontSize}px`;
-            this.applyViewerSettings();
+        // 글자 크기 & 줄 간격 (실시간 GPU 가속 갱신 + 변경 완료 시 저장으로 깜빡임 100% 제거)
+        const sliderFontSize = document.getElementById('slider-font-size');
+        sliderFontSize?.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value, 10);
+            this.state.fontSize = val;
+            const label = document.getElementById('font-size-val');
+            if (label) label.textContent = `${val}px`;
+            requestAnimationFrame(() => {
+                document.documentElement.style.setProperty('--scripture-size', `${val}px`);
+            });
+        });
+        sliderFontSize?.addEventListener('change', () => {
+            this.saveSettings();
         });
 
-        document.getElementById('slider-line-height')?.addEventListener('input', (e) => {
-            this.state.lineHeight = parseFloat(e.target.value);
-            document.getElementById('line-height-val').textContent = `${this.state.lineHeight}`;
-            this.applyViewerSettings();
+        const sliderLineHeight = document.getElementById('slider-line-height');
+        sliderLineHeight?.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            this.state.lineHeight = val;
+            const label = document.getElementById('line-height-val');
+            if (label) label.textContent = `${val}`;
+            requestAnimationFrame(() => {
+                document.documentElement.style.setProperty('--scripture-line-height', `${val}`);
+            });
+        });
+        sliderLineHeight?.addEventListener('change', () => {
+            this.saveSettings();
         });
 
         // 한글 서체 선택
@@ -806,9 +822,13 @@ window.BibleApp = {
 
                 const fontSlider = document.getElementById('slider-font-size');
                 if (fontSlider) fontSlider.value = this.state.fontSize;
+                const fontLabel = document.getElementById('font-size-val');
+                if (fontLabel) fontLabel.textContent = `${this.state.fontSize}px`;
 
                 const lineSlider = document.getElementById('slider-line-height');
                 if (lineSlider) lineSlider.value = this.state.lineHeight;
+                const lineLabel = document.getElementById('line-height-val');
+                if (lineLabel) lineLabel.textContent = `${this.state.lineHeight}`;
 
                 const stitleChk = document.getElementById('chk-show-stitles');
                 if (stitleChk) stitleChk.checked = this.state.showStitles;
