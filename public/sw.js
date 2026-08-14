@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordbible-cache-v1';
+const CACHE_NAME = 'wordbible-cache-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -38,20 +38,24 @@ self.addEventListener('activate', (e) => {
     self.clients.claim();
 });
 
+// Network-First 전략: 항상 최신 배포 코드를 가져오고, 오프라인일 때만 캐시를 사용
 self.addEventListener('fetch', (e) => {
-    // API 요청은 네트워크 우선
-    if (e.request.url.includes('/api/')) {
-        e.respondWith(
-            fetch(e.request).catch(() => {
+    if (e.request.method !== 'GET') return;
+
+    e.respondWith(
+        fetch(e.request)
+            .then((networkRes) => {
+                if (networkRes && networkRes.status === 200 && e.request.url.startsWith(self.location.origin)) {
+                    const resClone = networkRes.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(e.request, resClone);
+                    });
+                }
+                return networkRes;
+            })
+            .catch(() => {
                 return caches.match(e.request);
             })
-        );
-    } else {
-        // 정적 에셋은 캐시 우선
-        e.respondWith(
-            caches.match(e.request).then((res) => {
-                return res || fetch(e.request);
-            })
-        );
-    }
+    );
 });
+

@@ -245,38 +245,52 @@ window.BibleApp = {
         this.navigateTo(nextUnit);
     },
 
-    // 좌우 스와이프 제스처 (모바일/태블릿 터치 내비게이션)
+    // 좌우 스와이프 제스처 (안드로이드 / 삼성인터넷 / iOS 모바일 최적화)
     setupSwipeGestures() {
         let touchStartX = 0;
         let touchStartY = 0;
         let touchStartTime = 0;
 
         const handleTouchStart = (e) => {
-            if (e.touches.length > 1) return;
-            touchStartX = e.touches[0].clientX;
+            if (e.touches.length !== 1) return;
+            
+            // 모달이나 플로팅 툴바가 열려있으면 스와이프 제외
+            if (document.querySelector('.modal-overlay.active') || document.querySelector('.floating-selection-toolbar.active')) {
+                return;
+            }
+
+            const x = e.touches[0].clientX;
+            const screenW = window.innerWidth || document.documentElement.clientWidth;
+
+            // 삼성 인터넷 및 안드로이드 OS의 '가장자리 쓸어 뒤로가기' 제스처 충돌 방지 (좌우 40px 제외)
+            if (x < 40 || x > screenW - 40) return;
+
+            touchStartX = x;
             touchStartY = e.touches[0].clientY;
             touchStartTime = Date.now();
         };
 
         const handleTouchEnd = (e) => {
-            if (e.changedTouches.length === 0) return;
-            
-            // 모달이 열려있거나 선택 툴바가 활성화되어 있을 때는 제스처 무시
-            const activeModal = document.querySelector('.modal-overlay.active');
-            const activeToolbar = document.querySelector('.floating-selection-toolbar.active');
-            if (activeModal || activeToolbar) return;
+            if (e.changedTouches.length === 0 || touchStartX === 0) return;
+
+            if (document.querySelector('.modal-overlay.active') || document.querySelector('.floating-selection-toolbar.active')) {
+                touchStartX = 0;
+                return;
+            }
 
             const deltaX = e.changedTouches[0].clientX - touchStartX;
             const deltaY = e.changedTouches[0].clientY - touchStartY;
             const deltaTime = Date.now() - touchStartTime;
 
-            // 스와이프 판별: 500ms 이내, 수평 60px 이상, 수평 이동이 수직의 1.4배 이상
-            if (deltaTime < 500 && Math.abs(deltaX) > 60 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
-                if (deltaX < -60) {
-                    // 오른쪽에서 왼쪽으로 쓸기 (Next Chapter)
+            touchStartX = 0; // 리셋
+
+            // 스와이프 엄격 판정: 450ms 이내, 수평 80px 이상, 수평 이동이 수직 이동의 2.0배 이상 (상하 스크롤 오작동 100% 방지)
+            if (deltaTime < 450 && Math.abs(deltaX) >= 80 && Math.abs(deltaX) >= Math.abs(deltaY) * 2.0) {
+                if (deltaX < -80) {
+                    // 오른쪽에서 왼쪽으로 쓱 쓸기 ➔ 다음 장
                     this.navigateNextChapter();
-                } else if (deltaX > 60) {
-                    // 왼쪽에서 오른쪽으로 쓸기 (Prev Chapter)
+                } else if (deltaX > 80) {
+                    // 왼쪽에서 오른쪽으로 쓱 쓸기 ➔ 이전 장
                     this.navigatePrevChapter();
                 }
             }
