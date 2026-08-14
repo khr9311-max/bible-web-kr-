@@ -100,28 +100,23 @@
 }
 
 html {
-    height: 100%;
     -webkit-text-size-adjust: 100%;
+    background-color: var(--bg-base);
 }
 
 body {
     font-family: var(--font-ui);
     background-color: var(--bg-base);
     color: var(--text-primary);
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow-x: hidden;
+    min-height: 100%;
     line-height: 1.5;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: none;
-    text-rendering: optimizeSpeed;
+    background-attachment: scroll;
 }
 
-/* Glassmorphism Effect - 모바일 60fps 초경량 고성능 최적화 */
+/* Glassmorphism Effect - 초경량 표준 스타일 */
 .glass-panel {
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
-    transform: translateZ(0);
 }
 
 @media (min-width: 1024px) {
@@ -146,10 +141,9 @@ body {
     justify-content: space-between;
     padding: 0 12px;
     z-index: 100;
+    background: var(--bg-surface);
     border-bottom: 1px solid var(--border-subtle);
     white-space: nowrap;
-    transform: translateZ(0);
-    will-change: transform;
 }
 
 .header-left, .header-right, .header-center {
@@ -319,20 +313,17 @@ body {
    Main Layout & Scripture Viewer
    ========================================================================== */
 .app-main-layout {
-    margin-top: var(--header-height);
-    display: flex;
+    padding-top: var(--header-height);
     position: relative;
-    min-height: calc(100vh - var(--header-height));
-    min-height: calc(100dvh - var(--header-height));
+    width: 100%;
+    min-height: 100vh;
 }
 
 .scripture-container {
-    flex: 1;
     max-width: 960px;
     margin: 0 auto;
-    padding: 40px 24px 140px;
-    transition: max-width var(--transition-smooth);
-    touch-action: pan-y;
+    padding: 24px 16px 120px;
+    width: 100%;
 }
 
 .chapter-nav-btn {
