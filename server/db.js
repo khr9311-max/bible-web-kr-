@@ -336,8 +336,8 @@ function getDictionaryVerse(unitCode, jeol) {
         rows.forEach(r => matchedMap.set(r.id, r));
     }
 
-    // 2. 주요 인물 및 별칭 보정
-    const coreRows = db.prepare(`SELECT * FROM bible_dictionary WHERE aliases != '' OR id <= 80 ORDER BY id ASC`).all();
+    // 2. 주요 인물, 별칭, 도량형 및 성경 단어 보정
+    const coreRows = db.prepare(`SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' OR id <= 80 ORDER BY id ASC`).all();
     const combKo = `${rawRv} ${rawKo}`;
 
     coreRows.forEach(entry => {
@@ -365,9 +365,10 @@ function getDictionaryVerse(unitCode, jeol) {
 function searchDictionary(q, category, limit = 60) {
     let sql = 'SELECT * FROM bible_dictionary WHERE 1=1';
     const params = [];
-    if (category && (category === '인물' || category === '지명')) {
+    if (category && (category === '인명' || category === '인물' || category === '지명' || category === '단어')) {
+        const catVal = category === '인물' ? '인명' : category;
         sql += ' AND category = ?';
-        params.push(category);
+        params.push(catVal);
     }
     if (q) {
         sql += ' AND (name_ko LIKE ? OR name_en LIKE ? OR aliases LIKE ? OR meaning LIKE ? OR summary LIKE ?)';

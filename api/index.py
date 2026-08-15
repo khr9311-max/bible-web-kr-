@@ -249,8 +249,8 @@ class handler(http.server.BaseHTTPRequestHandler):
                         pattern = rf'(?:^|[\s"\'(\[\-])' + re.escape(word) + rf'{particles}(?=[\s.,?!;:\)\]\-]|$)'
                         return bool(re.search(pattern, text))
 
-                    # 자주 매칭되는 별칭/주요 인물 보정
-                    cur.execute("SELECT * FROM bible_dictionary WHERE aliases != '' OR id <= 80 ORDER BY id ASC;")
+                    # 자주 매칭되는 별칭/주요 인물/도량형 및 성경 단어 보정
+                    cur.execute("SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' OR id <= 80 ORDER BY id ASC;")
                     core_entries = [dict(r) for r in cur.fetchall()]
 
                     for entry in core_entries:
@@ -275,7 +275,7 @@ class handler(http.server.BaseHTTPRequestHandler):
 
                 self.send_json({"unit_code": unit_code, "jeol": jeol, "count": len(matched), "entries": matched})
 
-            # 4.3 성경 인물/지명 사전 검색 및 목록 조회 API
+            # 4.3 성경 인명/지명/단어 사전 검색 및 목록 조회 API
             elif "dictionary/search" in path or "dictionary/all" in path:
                 q = query.get("q", [""])[0].strip()
                 cat = query.get("category", [""])[0].strip()
@@ -284,9 +284,10 @@ class handler(http.server.BaseHTTPRequestHandler):
                 sql = "SELECT * FROM bible_dictionary WHERE 1=1"
                 params = []
 
-                if cat and cat in ["인물", "지명"]:
+                if cat and cat in ["인명", "인물", "지명", "단어"]:
+                    cat_val = "인명" if cat == "인물" else cat
                     sql += " AND category = ?"
-                    params.append(cat)
+                    params.append(cat_val)
 
                 if q:
                     sql += " AND (name_ko LIKE ? OR name_en LIKE ? OR aliases LIKE ? OR meaning LIKE ? OR summary LIKE ?)"

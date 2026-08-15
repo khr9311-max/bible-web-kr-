@@ -176,7 +176,7 @@
                         <i data-lucide="git-fork"></i> <span>관주 탐색</span>
                     </button>
                     <button class="side-tab-btn" id="tab-btn-dict">
-                        <i data-lucide="book-marked"></i> <span>인물/지명 사전</span>
+                        <i data-lucide="book-marked"></i> <span>성경 사전</span>
                     </button>
                 </div>
                 <button class="btn-close-panel" id="btn-close-side-panel"><i data-lucide="x"></i></button>
@@ -190,24 +190,25 @@
                 </div>
             </div>
 
-            <!-- Tab 2: 성경 인물/지명 사전 뷰 -->
+            <!-- Tab 2: 성경 인명/지명/단어 사전 뷰 -->
             <div class="side-panel-dict-wrap" id="side-view-dict" style="display:none;">
                 <div class="dict-search-bar-wrap">
                     <div class="dict-input-box">
                         <i data-lucide="search"></i>
-                        <input type="text" id="dict-search-input" placeholder="인물 또는 지명 검색 (예: 아브라함, 갈릴리)" autocomplete="off">
+                        <input type="text" id="dict-search-input" placeholder="인명, 지명, 단어·도량형 검색 (예: 다윗, 갈릴리, 달란트)" autocomplete="off">
                         <button class="btn-clear-dict" id="btn-clear-dict-search" title="검색어 지우기"><i data-lucide="x"></i></button>
                     </div>
                     <div class="dict-cat-filter-bar">
                         <button class="dict-cat-chip active" data-category="">전체</button>
-                        <button class="dict-cat-chip" data-category="인물">👤 인물</button>
+                        <button class="dict-cat-chip" data-category="인명">👤 인명</button>
                         <button class="dict-cat-chip" data-category="지명">📍 지명</button>
+                        <button class="dict-cat-chip" data-category="단어">📖 단어·도량형</button>
                     </div>
                 </div>
                 <div class="dict-results-scroll" id="dict-results-container">
                     <div class="panel-empty-state">
                         <i data-lucide="book-open"></i>
-                        <p>구절을 선택하거나 상단에서<br>성경 인물이나 지명을 검색해보세요.</p>
+                        <p>구절을 선택하거나 상단에서<br>인명, 지명, 성경 단어를 검색해보세요.</p>
                     </div>
                 </div>
             </div>

@@ -134,17 +134,19 @@ window.BibleDictionary = {
                     <p class="dict-hint-text">위 검색창에서 찾으시는 성경 인물이나 지명을 직접 검색해보세요!</p>
                 </div>
                 <div class="dict-popular-section">
-                    <span class="dict-section-label">🌟 주요 성경 인물 / 지명 바로가기</span>
+                    <span class="dict-section-label">🌟 주요 성경 인명 / 지명 / 도량형 바로가기</span>
                     <div class="dict-quick-chips">
-                        <button class="dict-quick-chip" data-query="아브라함">아브라함</button>
-                        <button class="dict-quick-chip" data-query="모세">모세</button>
                         <button class="dict-quick-chip" data-query="다윗">다윗</button>
-                        <button class="dict-quick-chip" data-query="예수 그리스도">예수 그리스도</button>
-                        <button class="dict-quick-chip" data-query="베드로">베드로</button>
                         <button class="dict-quick-chip" data-query="바울">바울</button>
                         <button class="dict-quick-chip" data-query="예루살렘">예루살렘</button>
                         <button class="dict-quick-chip" data-query="갈릴리">갈릴리</button>
-                        <button class="dict-quick-chip" data-query="베들레헴">베들레헴</button>
+                        <button class="dict-quick-chip" data-query="달란트">달란트</button>
+                        <button class="dict-quick-chip" data-query="세겔">세겔</button>
+                        <button class="dict-quick-chip" data-query="규빗">규빗</button>
+                        <button class="dict-quick-chip" data-query="에바">에바</button>
+                        <button class="dict-quick-chip" data-query="유월절">유월절</button>
+                        <button class="dict-quick-chip" data-query="언약궤">언약궤</button>
+                        <button class="dict-quick-chip" data-query="희년">희년</button>
                     </div>
                 </div>
             `;
@@ -244,10 +246,23 @@ window.BibleDictionary = {
     },
 
     buildEntryCardHtml(entry, highlightQuery = '') {
-        const isPerson = entry.category === '인물';
+        const isPerson = entry.category === '인명' || entry.category === '인물';
         const isPlace = entry.category === '지명';
-        const catBadgeClass = isPerson ? 'badge-person' : 'badge-place';
-        const catIcon = isPerson ? '👤' : '📍';
+        const isTerm = entry.category === '단어';
+
+        let catBadgeClass = 'badge-term';
+        let catIcon = '📖';
+        let catLabel = '단어·도량형';
+
+        if (isPerson) {
+            catBadgeClass = 'badge-person';
+            catIcon = '👤';
+            catLabel = '인명';
+        } else if (isPlace) {
+            catBadgeClass = 'badge-place';
+            catIcon = '📍';
+            catLabel = '지명';
+        }
 
         // 대표 관련 구절 링크 칩 생성
         let keyVerseChips = '';
@@ -259,7 +274,7 @@ window.BibleDictionary = {
         }
 
         const meaningHtml = entry.meaning 
-            ? `<div class="dict-meaning-tag"><span class="dict-label">이름의 뜻:</span> <strong>${entry.meaning}</strong></div>` 
+            ? `<div class="dict-meaning-tag"><span class="dict-label">${isTerm ? '단어의 의미/환산:' : '이름의 뜻:'}</span> <strong>${entry.meaning}</strong></div>` 
             : '';
 
         const origHtml = entry.name_original 
@@ -270,63 +285,11 @@ window.BibleDictionary = {
             ? `<span class="dict-eng-name">${entry.name_en}</span>` 
             : '';
 
-        // 지명(Place)인 경우 실제 성경 고고학 발굴지 Google 지도 연동
-        let mapHtml = '';
-        if (isPlace) {
-            let embedUrl = '';
-            let extUrl = '';
-            let satUrl = '';
-            let coordText = '';
-
-            if (entry.latitude && entry.longitude) {
-                const lat = parseFloat(entry.latitude);
-                const lng = parseFloat(entry.longitude);
-                embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&ll=${lat},${lng}&z=12&hl=ko&output=embed`;
-                extUrl = `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},14z`;
-                satUrl = `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},14z/data=!3m1!1e3`;
-                coordText = `${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E`;
-            } else {
-                const searchQ = `${entry.name_ko} 성경 고대 유적`;
-                embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&hl=ko&z=11&output=embed`;
-                extUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQ)}`;
-                satUrl = extUrl;
-                coordText = `성경 지리 고대 위치`;
-            }
-
-            mapHtml = `
-                <div class="dict-place-map-section">
-                    <button class="dict-map-toggle-btn" data-target="dict-map-${entry.id}">
-                        <div class="map-btn-title">
-                            <i data-lucide="map-pin"></i>
-                            <span>성경 역사 유적지 지도 (실제 위치)</span>
-                        </div>
-                        <i data-lucide="chevron-down" class="map-chevron-icon"></i>
-                    </button>
-                    <div class="dict-map-wrapper" id="dict-map-${entry.id}" style="display: none;">
-                        <div class="dict-geo-header">
-                            <span class="dict-geo-coord-badge"><i data-lucide="crosshair"></i> <strong>발굴 좌표:</strong> ${coordText}</span>
-                        </div>
-                        <div class="dict-iframe-box">
-                            <iframe class="dict-map-iframe" src="${embedUrl}" loading="lazy" allowfullscreen></iframe>
-                        </div>
-                        <div class="dict-map-links-bar">
-                            <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link" title="Google 지도에서 역사적 위치 보기">
-                                <i data-lucide="map"></i> <span>Google 지도에서 보기</span>
-                            </a>
-                            <a href="${satUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link" title="위성 사진 및 3D 지형 보기">
-                                <i data-lucide="globe"></i> <span>위성·지형 3D</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
         return `
             <div class="dict-entry-card" id="dict-entry-${entry.id}">
                 <div class="dict-card-top">
                     <div class="dict-name-wrap">
-                        <span class="dict-cat-badge ${catBadgeClass}">${catIcon} ${entry.category}</span>
+                        <span class="dict-cat-badge ${catBadgeClass}">${catIcon} ${catLabel}</span>
                         <h4 class="dict-entry-name">${entry.name_ko}</h4>
                         ${engHtml}
                         ${origHtml}
@@ -341,12 +304,10 @@ window.BibleDictionary = {
 
                 ${entry.events ? `
                     <div class="dict-card-events">
-                        <div class="dict-events-title"><i data-lucide="history"></i> 주요 행적 및 사건</div>
+                        <div class="dict-events-title"><i data-lucide="info"></i> ${isTerm ? '성경적 용례 및 구속사적 의미' : '주요 행적 및 사건'}</div>
                         <p>${entry.events}</p>
                     </div>
                 ` : ''}
-
-                ${mapHtml}
 
                 ${keyVerseChips ? `
                     <div class="dict-card-verses">
@@ -367,29 +328,6 @@ window.BibleDictionary = {
                 if (ref && window.BibleReader?.openParallelModal) {
                     window.BibleReader.openParallelModal(ref);
                 }
-            });
-        });
-
-        // 지도 토글 버튼 클릭 이벤트
-        document.querySelectorAll('.dict-map-toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.dataset.target;
-                const mapWrap = document.getElementById(targetId);
-                if (!mapWrap) return;
-
-                const isHidden = mapWrap.style.display === 'none';
-                mapWrap.style.display = isHidden ? 'block' : 'none';
-                btn.classList.toggle('active', isHidden);
-                
-                const span = btn.querySelector('span');
-                if (span) {
-                    span.textContent = isHidden ? 'Google 성지 지도 접기' : 'Google 성지 지도 보기';
-                }
-                const chevron = btn.querySelector('.map-chevron-icon');
-                if (chevron) {
-                    chevron.setAttribute('data-lucide', isHidden ? 'chevron-up' : 'chevron-down');
-                }
-                if (window.lucide) window.lucide.createIcons();
             });
         });
     },
