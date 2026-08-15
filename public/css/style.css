@@ -1617,11 +1617,14 @@ body.has-audio-bar-active .floating-selection-toolbar.active {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.highlight-picker {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.single-hl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #f59e0b;
+    display: inline-block;
     flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
 }
 
 .color-dot {
@@ -1637,16 +1640,11 @@ body.has-audio-bar-active .floating-selection-toolbar.active {
     flex-shrink: 0;
 }
 
-.color-dot:hover {
-    transform: scale(1.2);
-}
-
 .color-yellow { background: #f59e0b; }
 .color-green { background: #10b981; }
 .color-pink { background: #f43f5e; }
 .color-cyan { background: #06b6d4; }
 .color-none { background: var(--bg-surface); color: var(--text-muted); }
-.color-none svg, .color-none i { width: 10px; height: 10px; }
 
 .toolbar-divider {
     width: 1px;

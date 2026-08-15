@@ -559,46 +559,37 @@ window.BibleReader = {
             this.clearSelection();
         });
 
-        // 일괄 형광펜 색상 클릭
-        document.querySelectorAll('.highlight-picker .color-dot').forEach(dot => {
-            dot.addEventListener('click', async () => {
-                const sorted = this.getSelectedVersesSorted();
-                if (sorted.length === 0) return;
-
-                const color = dot.dataset.color;
-                const unit = window.BibleApp.state.currentUnitCode;
-
-                // 병렬로 모든 선택된 절에 형광펜 적용
-                await Promise.all(sorted.map(v => {
-                    return window.BibleApp.fetchApi('/user/highlight', {
-                        method: 'POST',
-                        body: JSON.stringify({ unit_code: unit, jeol: v.jeol, color })
-                    });
-                }));
-
-                // UI 즉시 일괄 업데이트
-                sorted.forEach(v => {
-                    const el = document.getElementById(`verse-${v.jeol}`);
-                    if (el) {
-                        el.className = el.className.replace(/hl-(yellow|green|pink|cyan)/g, '').trim();
-                        if (color !== 'none') el.classList.add(`hl-${color}`);
-                    }
-                    v.highlight = color === 'none' ? null : color;
-                });
-
-                window.BibleApp.showToast(color === 'none' 
-                    ? `${sorted.length}개 구절의 형광펜이 지워졌습니다.` 
-                    : `${sorted.length}개 구절에 형광펜이 칠해졌습니다.`);
-            });
-        });
-
-        // 일괄 말씀 카드 만들기
-        document.getElementById('btn-action-card')?.addEventListener('click', () => {
+        // 단일 형광펜 토글 (칠하기 / 지우기)
+        document.getElementById('btn-action-highlight')?.addEventListener('click', async () => {
             const sorted = this.getSelectedVersesSorted();
             if (sorted.length === 0) return;
 
-            window.BibleApp.openModal('modal-card-gen');
-            window.BibleCardGen?.prepareCardWithMultipleVerses(sorted);
+            // 이미 모두 형광펜이 칠해져 있으면 지우고, 아니면 노란색 형광펜 적용
+            const allHighlighted = sorted.every(v => v.highlight);
+            const color = allHighlighted ? 'none' : 'yellow';
+            const unit = window.BibleApp.state.currentUnitCode;
+
+            // 병렬로 모든 선택된 절에 형광펜 적용
+            await Promise.all(sorted.map(v => {
+                return window.BibleApp.fetchApi('/user/highlight', {
+                    method: 'POST',
+                    body: JSON.stringify({ unit_code: unit, jeol: v.jeol, color })
+                });
+            }));
+
+            // UI 즉시 일괄 업데이트
+            sorted.forEach(v => {
+                const el = document.getElementById(`verse-${v.jeol}`);
+                if (el) {
+                    el.className = el.className.replace(/hl-(yellow|green|pink|cyan)/g, '').trim();
+                    if (color !== 'none') el.classList.add(`hl-${color}`);
+                }
+                v.highlight = color === 'none' ? null : color;
+            });
+
+            window.BibleApp.showToast(color === 'none' 
+                ? `${sorted.length}개 구절의 형광펜이 지워졌습니다.` 
+                : `${sorted.length}개 구절에 형광펜이 칠해졌습니다.`);
         });
 
         // 관주 보기
