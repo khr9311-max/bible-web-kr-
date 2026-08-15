@@ -91,7 +91,7 @@ window.BibleReader = {
         const compBookName = engVers.includes(compVer) ? `${bookMeta.eng_name || bookMeta.name} ${currentChap}` : `${bookMeta.name} ${currentChap}장`;
 
         if (isCompare) {
-            // 대조 모드 (2열 분할)
+            // 대조 모드 (2열 분할 대조 뷰어)
             html += `
                 <div class="compare-col-header">
                     <span>${this.getVersionName(priVer)} — ${priBookName}</span>
@@ -100,7 +100,7 @@ window.BibleReader = {
                 <div class="compare-mode-wrap">
             `;
 
-            data.verses.forEach(v => {
+            data.verses.forEach((v, idx) => {
                 const hlClass = v.highlight ? `hl-${v.highlight}` : '';
                 const priStitle = v[`stitle_${priVer}`] || (priVer === 'rv' ? v.stitle_rv : '');
                 const compStitle = v[`stitle_${compVer}`] || (compVer === 'rv' ? v.stitle_rv : '');
@@ -115,12 +115,15 @@ window.BibleReader = {
                     `;
                 }
 
+                const isNewPara = this.isParagraphStart(v, priVer);
+                const paraClass = (isNewPara && idx > 0) ? 'para-start-row' : '';
+
                 const priText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
                 const compText = this.cleanVerseHtml(v[compCol] || '');
 
                 html += `
                     ${stitleRowHtml}
-                    <div class="verse-compare-row ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
+                    <div class="verse-compare-row ${hlClass} ${paraClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
                         <div class="compare-pri-col">
                             <span class="verse-num">${v.jeol}</span>
                             <span class="verse-text">${priText}</span>
@@ -134,21 +137,53 @@ window.BibleReader = {
 
             html += `</div>`;
         } else {
-            // 단일 뷰어 모드
-            data.verses.forEach(v => {
-                const hlClass = v.highlight ? `hl-${v.highlight}` : '';
-                const priStitle = v[`stitle_${priVer}`] || v.stitle_rv || '';
-                const stitleHtml = priStitle ? `<div class="section-stitle">${this.formatStitle(priStitle)}</div>` : '';
-                const verseText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
+            // 단일 뷰어 모드: 문단(Paragraph, 동그라미 ○) 단위별로 묶어서 렌더링
+            let currentParagraphVerses = [];
+            let currentStitleHtml = '';
 
-                html += `
-                    ${stitleHtml}
-                    <div class="verse-item ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
-                        <span class="verse-num">${v.jeol}</span>
-                        <span class="verse-text">${verseText}</span>
-                    </div>
-                `;
+            const renderParagraphBlock = (stitle, versesInPara) => {
+                if (!versesInPara.length) return '';
+                let blockHtml = '';
+                if (stitle) {
+                    blockHtml += `<div class="section-stitle">${stitle}</div>`;
+                }
+                blockHtml += `<div class="scripture-paragraph">`;
+                versesInPara.forEach(v => {
+                    const hlClass = v.highlight ? `hl-${v.highlight}` : '';
+                    const vText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
+                    blockHtml += `
+                        <div class="verse-item ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
+                            <span class="verse-num">${v.jeol}</span>
+                            <span class="verse-text">${vText}</span>
+                        </div>
+                    `;
+                });
+                blockHtml += `</div>`;
+                return blockHtml;
+            };
+
+            data.verses.forEach((v, idx) => {
+                const isNewPara = this.isParagraphStart(v, priVer);
+                const priStitle = v[`stitle_${priVer}`] || v.stitle_rv || '';
+
+                if (isNewPara && idx > 0) {
+                    // 이전 문단 렌더링 후 새 문단 초기화
+                    html += renderParagraphBlock(currentStitleHtml, currentParagraphVerses);
+                    currentParagraphVerses = [];
+                    currentStitleHtml = '';
+                }
+
+                if (priStitle) {
+                    currentStitleHtml = this.formatStitle(priStitle);
+                }
+
+                currentParagraphVerses.push(v);
             });
+
+            // 마지막 문단 렌더링
+            if (currentParagraphVerses.length) {
+                html += renderParagraphBlock(currentStitleHtml, currentParagraphVerses);
+            }
         }
 
         viewport.innerHTML = html;
@@ -156,6 +191,27 @@ window.BibleReader = {
 
         // 절 클릭 이벤트 바인딩
         this.bindVerseClickEvents();
+    },
+
+    // 문단 시작 여부 판별 (1절, 소제목, 표준 성경 문단 기호 ○, ●, §, <p>, <h2>)
+    isParagraphStart(verse, priVer) {
+        if (verse.jeol === 1) return true;
+        const priCol = `phrase_${priVer}`;
+        const rawPri = verse[priCol] || '';
+        const rawRv = verse.phrase_rv || '';
+
+        // 1. 소제목(stitle)이 있는 절은 무조건 새 문단
+        if (verse[`stitle_${priVer}`] || verse.stitle_rv) return true;
+
+        // 2. 표준 한글 성경 동그라미(○) 문단 구분 기호 검사
+        if (rawRv.includes('○') || rawRv.includes('●') || rawRv.includes('§')) return true;
+
+        // 3. 현재 번역본의 문단 기호 및 <p> 태그 검사
+        if (rawPri.includes('○') || rawPri.includes('●') || rawPri.includes('§')) return true;
+        if (rawPri.includes('<p>') || rawRv.includes('<p>')) return true;
+        if (rawPri.includes('<h2>') || rawRv.includes('<h2>')) return true;
+
+        return false;
     },
 
     formatStitle(raw) {
@@ -201,6 +257,9 @@ window.BibleReader = {
         
         // 5. 예수님 말씀 (신약 <i> 태그) 인용구 마크업
         txt = txt.replace(/<i>/gi, '<span class="jesus-word">').replace(/<\/i>/gi, '</span>');
+
+        // 6. 단락 구분 기호(○, ●, § 등) 마크업
+        txt = txt.replace(/([○●§])/g, '<span class="para-circle-mark">$1</span>');
         return txt;
     },
 

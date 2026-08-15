@@ -497,32 +497,99 @@ body {
 .verse-item.hl-pink { background-color: var(--hl-pink); }
 .verse-item.hl-cyan { background-color: var(--hl-cyan); }
 
-/* Paragraph Flow Mode (문단 단위 붙여읽기) */
+/* ==========================================================================
+   Scripture Paragraph & Flow Mode (문단 단위 붙여읽기)
+   ========================================================================== */
+.scripture-paragraph {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.para-circle-mark {
+    color: var(--brand-primary);
+    font-weight: 700;
+    margin-right: 3px;
+    opacity: 0.9;
+}
+
+/* Paragraph Flow Mode (문단 단위 붙여읽기 활성화 시) */
 .verses-viewport.mode-paragraph {
-    line-height: calc(var(--scripture-line-height) * 1.05);
     text-align: justify;
     word-break: keep-all;
+}
+
+.verses-viewport.mode-paragraph .scripture-paragraph {
+    display: block;
+    margin-bottom: 24px;
+    line-height: calc(var(--scripture-line-height) * 1.12);
+    text-indent: 1.2em; /* 정갈한 문단 첫 줄 들여쓰기 */
+}
+
+.verses-viewport.mode-paragraph .scripture-paragraph:last-child {
+    margin-bottom: 0;
 }
 
 .verses-viewport.mode-paragraph .verse-item {
     display: inline;
     padding: 0 1px;
     margin: 0;
-    border-radius: 2px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.verses-viewport.mode-paragraph .verse-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.verses-viewport.mode-paragraph .verse-item.selected {
+    background: rgba(59, 130, 246, 0.28) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+.verses-viewport.mode-paragraph .verse-item.audio-active {
+    background: rgba(245, 158, 11, 0.28) !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
 }
 
 .verses-viewport.mode-paragraph .verse-num {
+    display: inline-block;
     font-size: 0.72em;
     vertical-align: super;
-    margin-right: 3px;
+    margin-right: 2px;
     margin-left: 6px;
-    opacity: 0.85;
+    color: var(--text-muted);
     font-weight: 700;
+    opacity: 0.85;
+    user-select: none;
+}
+
+.verses-viewport.mode-paragraph .verse-item:first-child .verse-num {
+    margin-left: 0;
 }
 
 .verses-viewport.mode-paragraph .section-stitle {
     display: block;
-    margin: 28px 0 14px;
+    margin: 32px 0 14px;
+    text-indent: 0; /* 소제목은 들여쓰기 제외 */
+}
+
+.verses-viewport.mode-paragraph .para-circle-mark {
+    display: none; /* 문단 단위 모드에서는 블록과 들여쓰기로 구분되므로 기호 숨김 */
+}
+
+/* Compare Mode Paragraph Spacing */
+.verse-compare-row.para-start-row {
+    margin-top: 14px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-subtle);
+}
+
+.verse-compare-row.para-start-row:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 /* ==========================================================================
