@@ -337,24 +337,20 @@ function getDictionaryVerse(unitCode, jeol) {
     }
 
     // 2. 주요 인물, 별칭, 도량형 및 성경 단어 보정
-    const coreRows = db.prepare(`SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' OR id <= 80 ORDER BY id ASC`).all();
-    const combKo = `${rawRv} ${rawKo}`;
+    const coreRows = db.prepare(`SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' ORDER BY id ASC`).all();
+    const cleanTxt = `${rawRv.replace(/<[^>]+>/g, ' ')} ${rawKo.replace(/<[^>]+>/g, ' ')}`;
 
     coreRows.forEach(entry => {
         if (matchedMap.has(entry.id)) return;
         let isMatch = false;
-        if (entry.name_ko && combKo.includes(entry.name_ko)) isMatch = true;
-        if (!isMatch && entry.aliases) {
-            const list = entry.aliases.split(',').map(s => s.trim()).filter(Boolean);
-            for (const a of list) {
-                if (a.length >= 2 && combKo.includes(a)) {
-                    isMatch = true;
-                    break;
-                }
+        const aliases = (entry.aliases || '').split(',').map(s => s.trim()).filter(Boolean);
+        const baseNames = [entry.name_ko, ...aliases];
+
+        for (const n of baseNames) {
+            if (n.length >= 2 && cleanTxt.includes(n)) {
+                isMatch = true;
+                break;
             }
-        }
-        if (!isMatch && entry.name_en && entry.name_en.length >= 3 && txtNv.includes(entry.name_en.toLowerCase())) {
-            isMatch = true;
         }
         if (isMatch) matchedMap.set(entry.id, entry);
     });

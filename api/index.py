@@ -250,23 +250,25 @@ class handler(http.server.BaseHTTPRequestHandler):
                         return bool(re.search(pattern, text))
 
                     # 자주 매칭되는 별칭/주요 인물/도량형 및 성경 단어 보정
-                    cur.execute("SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' OR id <= 80 ORDER BY id ASC;")
+                    cur.execute("SELECT * FROM bible_dictionary WHERE category = '단어' OR aliases != '' ORDER BY id ASC;")
                     core_entries = [dict(r) for r in cur.fetchall()]
 
                     for entry in core_entries:
                         if entry["id"] in matched_map:
                             continue
                         name_ko = entry["name_ko"]
-                        name_en = (entry["name_en"] or "").lower()
                         aliases = [a.strip() for a in (entry["aliases"] or "").split(",") if a.strip()]
 
                         base_names = [name_ko] + aliases
-                        if ' ' in name_ko:
-                            base_names.extend([p for p in name_ko.split() if len(p) >= 2])
-
-                        is_match = any(match_word(n, clean_txt) for n in base_names)
-                        if not is_match and name_en and len(name_en) >= 3 and name_en in raw_nv:
-                            is_match = True
+                        is_match = False
+                        for n in base_names:
+                            if len(n) >= 2 and match_word(n, clean_txt):
+                                is_match = True
+                                break
+                            elif len(n) == 1 and n in ["금", "은", "놋", "철"]:
+                                if match_word(n, clean_txt):
+                                    is_match = True
+                                    break
 
                         if is_match:
                             matched_map[entry["id"]] = entry
