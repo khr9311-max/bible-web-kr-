@@ -270,34 +270,51 @@ window.BibleDictionary = {
             ? `<span class="dict-eng-name">${entry.name_en}</span>` 
             : '';
 
-        // 지명(Place)인 경우 Google 지도 임베드 및 링크 생성
+        // 지명(Place)인 경우 실제 성경 고고학 발굴지 Google 지도 연동
         let mapHtml = '';
         if (isPlace) {
             let embedUrl = '';
             let extUrl = '';
+            let satUrl = '';
+            let coordText = '';
 
             if (entry.latitude && entry.longitude) {
-                embedUrl = `https://maps.google.com/maps?q=${entry.latitude},${entry.longitude}&hl=ko&z=11&output=embed`;
-                extUrl = `https://www.google.com/maps/search/?api=1&query=${entry.latitude},${entry.longitude}`;
+                const lat = parseFloat(entry.latitude);
+                const lng = parseFloat(entry.longitude);
+                embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&ll=${lat},${lng}&z=12&hl=ko&output=embed`;
+                extUrl = `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},14z`;
+                satUrl = `https://www.google.com/maps/place/${lat},${lng}/@${lat},${lng},14z/data=!3m1!1e3`;
+                coordText = `${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E`;
             } else {
-                const searchQ = `${entry.name_ko} 성지`;
-                embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&hl=ko&z=10&output=embed`;
+                const searchQ = `${entry.name_ko} 성경 고대 유적`;
+                embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&hl=ko&z=11&output=embed`;
                 extUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQ)}`;
+                satUrl = extUrl;
+                coordText = `성경 지리 고대 위치`;
             }
 
             mapHtml = `
                 <div class="dict-place-map-section">
                     <button class="dict-map-toggle-btn" data-target="dict-map-${entry.id}">
-                        <i data-lucide="map-pin"></i> <span>Google 성지 지도 보기</span>
+                        <div class="map-btn-title">
+                            <i data-lucide="map-pin"></i>
+                            <span>성경 역사 유적지 지도 (실제 위치)</span>
+                        </div>
                         <i data-lucide="chevron-down" class="map-chevron-icon"></i>
                     </button>
                     <div class="dict-map-wrapper" id="dict-map-${entry.id}" style="display: none;">
+                        <div class="dict-geo-header">
+                            <span class="dict-geo-coord-badge"><i data-lucide="crosshair"></i> <strong>발굴 좌표:</strong> ${coordText}</span>
+                        </div>
                         <div class="dict-iframe-box">
                             <iframe class="dict-map-iframe" src="${embedUrl}" loading="lazy" allowfullscreen></iframe>
                         </div>
                         <div class="dict-map-links-bar">
-                            <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link">
-                                <i data-lucide="external-link"></i> <span>Google 지도 앱에서 크게 보기 (위성/3D)</span>
+                            <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link" title="Google 지도에서 역사적 위치 보기">
+                                <i data-lucide="map"></i> <span>Google 지도에서 보기</span>
+                            </a>
+                            <a href="${satUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link" title="위성 사진 및 3D 지형 보기">
+                                <i data-lucide="globe"></i> <span>위성·지형 3D</span>
                             </a>
                         </div>
                     </div>

@@ -1774,6 +1774,12 @@ body.focus-mode-active .floating-exit-focus-btn {
     background: rgba(16, 185, 129, 0.08);
 }
 
+.map-btn-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .dict-map-toggle-btn svg, .dict-map-toggle-btn i {
     width: 14px;
     height: 14px;
@@ -1785,9 +1791,31 @@ body.focus-mode-active .floating-exit-focus-btn {
     background: var(--bg-surface-elevated);
 }
 
+.dict-geo-header {
+    margin-bottom: 6px;
+}
+
+.dict-geo-coord-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-subtle);
+}
+
+.dict-geo-coord-badge svg, .dict-geo-coord-badge i {
+    width: 11px;
+    height: 11px;
+    color: var(--accent-emerald, #10b981);
+}
+
 .dict-iframe-box {
     width: 100%;
-    height: 200px;
+    height: 220px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     border: 1px solid var(--border-subtle);
@@ -1801,8 +1829,11 @@ body.focus-mode-active .floating-exit-focus-btn {
 }
 
 .dict-map-links-bar {
-    margin-top: 6px;
-    text-align: right;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .dict-ext-map-link {
@@ -1813,14 +1844,18 @@ body.focus-mode-active .floating-exit-focus-btn {
     font-weight: 600;
     color: var(--brand-primary);
     text-decoration: none;
-    padding: 3px 6px;
-    border-radius: var(--radius-sm);
-    transition: background var(--transition-fast);
+    padding: 3px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
 }
 
 .dict-ext-map-link:hover {
-    background: rgba(37, 99, 235, 0.1);
-    text-decoration: underline;
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: white;
+    transform: translateY(-1px);
 }
 
 .dict-ext-map-link svg, .dict-ext-map-link i {
