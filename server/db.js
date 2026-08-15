@@ -320,24 +320,49 @@ function getDictionaryVerse(unitCode, jeol) {
     const verse = db.prepare('SELECT phrase_rv, phrase_ko, phrase_nv FROM verses WHERE unit_code = ? AND jeol = ?').get(unitCode, jeol);
     if (!verse) return [];
 
-    const combKo = `${verse.phrase_rv || ''} ${verse.phrase_ko || ''}`;
+    const rawRv = verse.phrase_rv || '';
+    const rawKo = verse.phrase_ko || '';
     const txtNv = (verse.phrase_nv || '').toLowerCase();
-    const all = db.prepare('SELECT * FROM bible_dictionary ORDER BY id ASC').all();
 
-    return all.filter(entry => {
-        if (entry.name_ko && combKo.includes(entry.name_ko)) return true;
-        if (entry.aliases) {
+    // 1. 태깅된 고유명사 (<b>...</b>) 추출
+    const bNames = Array.from(new Set([...(rawRv.match(/<b>([^<]+)<\/b>/g) || []), ...(rawKo.match(/<b>([^<]+)<\/b>/g) || [])]))
+        .map(s => s.replace(/<\/?b>/g, '').trim())
+        .filter(Boolean);
+
+    const matchedMap = new Map();
+    if (bNames.length > 0) {
+        const placeholders = bNames.map(() => '?').join(',');
+        const rows = db.prepare(`SELECT * FROM bible_dictionary WHERE name_ko IN (${placeholders}) ORDER BY id ASC`).all(...bNames);
+        rows.forEach(r => matchedMap.set(r.id, r));
+    }
+
+    // 2. 주요 인물 및 별칭 보정
+    const coreRows = db.prepare(`SELECT * FROM bible_dictionary WHERE aliases != '' OR id <= 80 ORDER BY id ASC`).all();
+    const combKo = `${rawRv} ${rawKo}`;
+
+    coreRows.forEach(entry => {
+        if (matchedMap.has(entry.id)) return;
+        let isMatch = false;
+        if (entry.name_ko && combKo.includes(entry.name_ko)) isMatch = true;
+        if (!isMatch && entry.aliases) {
             const list = entry.aliases.split(',').map(s => s.trim()).filter(Boolean);
             for (const a of list) {
-                if (a.length >= 2 && combKo.includes(a)) return true;
+                if (a.length >= 2 && combKo.includes(a)) {
+                    isMatch = true;
+                    break;
+                }
             }
         }
-        if (entry.name_en && entry.name_en.length >= 3 && txtNv.includes(entry.name_en.toLowerCase())) return true;
-        return false;
+        if (!isMatch && entry.name_en && entry.name_en.length >= 3 && txtNv.includes(entry.name_en.toLowerCase())) {
+            isMatch = true;
+        }
+        if (isMatch) matchedMap.set(entry.id, entry);
     });
+
+    return Array.from(matchedMap.values());
 }
 
-function searchDictionary(q, category) {
+function searchDictionary(q, category, limit = 60) {
     let sql = 'SELECT * FROM bible_dictionary WHERE 1=1';
     const params = [];
     if (category && (category === '인물' || category === '지명')) {
@@ -349,7 +374,8 @@ function searchDictionary(q, category) {
         const p = `%${q}%`;
         params.push(p, p, p, p, p);
     }
-    sql += ' ORDER BY id ASC';
+    sql += ' ORDER BY id ASC LIMIT ?';
+    params.push(limit);
     return db.prepare(sql).all(...params);
 }
 

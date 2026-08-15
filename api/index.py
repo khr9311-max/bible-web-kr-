@@ -224,6 +224,17 @@ class handler(http.server.BaseHTTPRequestHandler):
                     raw_ko = verse_row["phrase_ko"] or ""
                     raw_nv = (verse_row["phrase_nv"] or "").lower()
 
+                    # 1. 성경 원문 본문에 태깅된 고유명사 (<b>...</b>) 추출
+                    b_names = set(re.findall(r'<b>([^<]+)</b>', raw_rv) + re.findall(r'<b>([^<]+)</b>', raw_ko))
+                    
+                    matched_map = {}
+                    if b_names:
+                        placeholders = ",".join("?" for _ in b_names)
+                        cur.execute(f"SELECT * FROM bible_dictionary WHERE name_ko IN ({placeholders}) ORDER BY id ASC;", tuple(b_names))
+                        for r in cur.fetchall():
+                            matched_map[r["id"]] = dict(r)
+
+                    # 2. 본문 텍스트 내 별칭/영문명 매칭 (예: 아브람 -> 아브라함, 게바 -> 베드로, 사울 -> 바울)
                     def clean_verse_text(text):
                         txt = re.sub(r'<cite>\d+</cite>', '', text)
                         txt = re.sub(r'<u[^>]*>[^<]*</u>', '', txt)
@@ -238,10 +249,13 @@ class handler(http.server.BaseHTTPRequestHandler):
                         pattern = rf'(?:^|[\s"\'(\[\-])' + re.escape(word) + rf'{particles}(?=[\s.,?!;:\)\]\-]|$)'
                         return bool(re.search(pattern, text))
 
-                    cur.execute("SELECT * FROM bible_dictionary ORDER BY id ASC;")
-                    all_entries = [dict(r) for r in cur.fetchall()]
+                    # 자주 매칭되는 별칭/주요 인물 보정
+                    cur.execute("SELECT * FROM bible_dictionary WHERE aliases != '' OR id <= 80 ORDER BY id ASC;")
+                    core_entries = [dict(r) for r in cur.fetchall()]
 
-                    for entry in all_entries:
+                    for entry in core_entries:
+                        if entry["id"] in matched_map:
+                            continue
                         name_ko = entry["name_ko"]
                         name_en = (entry["name_en"] or "").lower()
                         aliases = [a.strip() for a in (entry["aliases"] or "").split(",") if a.strip()]
@@ -255,7 +269,9 @@ class handler(http.server.BaseHTTPRequestHandler):
                             is_match = True
 
                         if is_match:
-                            matched.append(entry)
+                            matched_map[entry["id"]] = entry
+
+                    matched = list(matched_map.values())
 
                 self.send_json({"unit_code": unit_code, "jeol": jeol, "count": len(matched), "entries": matched})
 
@@ -263,6 +279,7 @@ class handler(http.server.BaseHTTPRequestHandler):
             elif "dictionary/search" in path or "dictionary/all" in path:
                 q = query.get("q", [""])[0].strip()
                 cat = query.get("category", [""])[0].strip()
+                limit = int(query.get("limit", [60])[0])
 
                 sql = "SELECT * FROM bible_dictionary WHERE 1=1"
                 params = []
@@ -276,7 +293,8 @@ class handler(http.server.BaseHTTPRequestHandler):
                     p = f"%{q}%"
                     params.extend([p, p, p, p, p])
 
-                sql += " ORDER BY id ASC;"
+                sql += " ORDER BY id ASC LIMIT ?;"
+                params.append(limit)
                 cur.execute(sql, tuple(params))
                 items = [dict(r) for r in cur.fetchall()]
                 self.send_json({"query": q, "category": cat, "count": len(items), "entries": items})
