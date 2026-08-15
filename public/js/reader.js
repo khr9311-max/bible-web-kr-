@@ -151,12 +151,7 @@ window.BibleReader = {
                 versesInPara.forEach(v => {
                     const hlClass = v.highlight ? `hl-${v.highlight}` : '';
                     const vText = this.cleanVerseHtml(v[priCol] || v.phrase_rv || '');
-                    blockHtml += `
-                        <div class="verse-item ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}">
-                            <span class="verse-num">${v.jeol}</span>
-                            <span class="verse-text">${vText}</span>
-                        </div>
-                    `;
+                    blockHtml += `<span class="verse-item ${hlClass}" id="verse-${v.jeol}" data-jeol="${v.jeol}" data-unit="${v.unit_code}"><sup class="verse-num">${v.jeol}</sup><span class="verse-text">${vText}</span></span>`;
                 });
                 blockHtml += `</div>`;
                 return blockHtml;

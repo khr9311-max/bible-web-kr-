@@ -454,10 +454,11 @@ body {
 /* Single Verse Block */
 .verse-item {
     position: relative;
-    padding: 6px 12px;
+    padding: 4px 8px;
     border-radius: var(--radius-sm);
     transition: background-color var(--transition-fast);
     cursor: pointer;
+    display: block;
 }
 
 .verse-item:hover {
@@ -478,10 +479,10 @@ body {
 .verse-num {
     display: inline-block;
     font-family: var(--font-brand);
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--brand-primary);
-    margin-right: 8px;
+    margin-right: 6px;
     user-select: none;
     vertical-align: baseline;
     opacity: 0.85;
@@ -503,7 +504,8 @@ body {
 .scripture-paragraph {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    margin-bottom: 12px;
 }
 
 .para-circle-mark {
@@ -517,13 +519,14 @@ body {
 .verses-viewport.mode-paragraph {
     text-align: justify;
     word-break: keep-all;
+    letter-spacing: -0.015em;
 }
 
 .verses-viewport.mode-paragraph .scripture-paragraph {
     display: block;
-    margin-bottom: 24px;
-    line-height: calc(var(--scripture-line-height) * 1.12);
-    text-indent: 1.2em; /* 정갈한 문단 첫 줄 들여쓰기 */
+    margin-bottom: 18px;
+    line-height: calc(var(--scripture-line-height) * 1.05);
+    text-indent: 1em; /* 실제 종이 성경과 같은 자연스러운 문단 첫 줄 들여쓰기 */
 }
 
 .verses-viewport.mode-paragraph .scripture-paragraph:last-child {
@@ -532,9 +535,9 @@ body {
 
 .verses-viewport.mode-paragraph .verse-item {
     display: inline;
-    padding: 0 1px;
+    padding: 0;
     margin: 0;
-    border-radius: 3px;
+    border-radius: 2px;
     cursor: pointer;
     transition: background var(--transition-fast);
 }
@@ -545,23 +548,26 @@ body {
 
 .verses-viewport.mode-paragraph .verse-item.selected {
     background: rgba(59, 130, 246, 0.28) !important;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.4);
+    border-radius: 2px;
 }
 
 .verses-viewport.mode-paragraph .verse-item.audio-active {
     background: rgba(245, 158, 11, 0.28) !important;
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 1.5px rgba(245, 158, 11, 0.4);
+    border-radius: 2px;
 }
 
 .verses-viewport.mode-paragraph .verse-num {
-    display: inline-block;
+    display: inline;
     font-size: 0.72em;
     vertical-align: super;
+    line-height: 0;
     margin-right: 2px;
-    margin-left: 6px;
-    color: var(--text-muted);
+    margin-left: 5px;
+    color: var(--brand-primary);
     font-weight: 700;
-    opacity: 0.85;
+    opacity: 0.88;
     user-select: none;
 }
 
@@ -571,7 +577,7 @@ body {
 
 .verses-viewport.mode-paragraph .section-stitle {
     display: block;
-    margin: 32px 0 14px;
+    margin: 28px 0 12px;
     text-indent: 0; /* 소제목은 들여쓰기 제외 */
 }
 
