@@ -2006,6 +2006,19 @@ body.focus-mode-active .floating-exit-focus-btn {
     color: var(--brand-primary);
 }
 
+.crossref-mark-badge.active-badge {
+    background: var(--brand-primary);
+    color: white !important;
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.crossref-entry-card.crossref-target-highlight {
+    border-color: var(--brand-primary);
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
 .crossref-version-label {
     font-size: 11.5px;
     font-weight: 700;

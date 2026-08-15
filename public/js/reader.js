@@ -322,11 +322,15 @@ window.BibleReader = {
                     return;
                 }
 
-                // 관주 기호 클릭 시
-                if (e.target.classList.contains('crossref-mark')) {
+                // 관주/각주 기호 (ㄱ, ㄴ, ㄷ, 1 등) 클릭 시
+                const markEl = e.target.closest('.crossref-mark');
+                if (markEl) {
+                    e.preventDefault();
                     e.stopPropagation();
-                    const jeol = parseInt(el.dataset.jeol, 10);
-                    window.BibleCrossRef?.showForVerse(window.BibleApp.state.currentUnitCode, jeol);
+                    const markChar = markEl.textContent.trim();
+                    const jeol = parseInt(el.dataset.jeol || markEl.closest('[data-jeol]')?.dataset.jeol, 10);
+                    const unit = parseInt(el.dataset.unit || markEl.closest('[data-unit]')?.dataset.unit || window.BibleApp.state.currentUnitCode, 10);
+                    window.BibleCrossRef?.showForVerse(unit, jeol, markChar);
                     return;
                 }
 
