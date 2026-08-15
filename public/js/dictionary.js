@@ -342,12 +342,13 @@ window.BibleDictionary = {
     },
 
     bindCardInteractions() {
-        // 구절 칩 클릭 시 해당 말씀 바로보기 모달 오픈
+        // 구절 칩 클릭 시 해당 말씀 팝업 모달 오픈
         document.querySelectorAll('.dict-ref-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const ref = btn.dataset.ref;
-                if (ref && window.BibleReader?.lookupParallelRef) {
-                    window.BibleReader.lookupParallelRef(ref);
+                if (ref && window.BibleReader?.openParallelModal) {
+                    window.BibleReader.openParallelModal(ref);
                 }
             });
         });
