@@ -49,9 +49,6 @@ window.BibleReader = {
             this.renderVerses(data);
             viewport.style.opacity = '1';
 
-            // 통독 버튼 상태 갱신
-            this.updateReadButtonState(data.is_read);
-
             // 목표 절로 스크롤
             if (targetJeol && targetJeol > 1) {
                 setTimeout(() => {
@@ -575,35 +572,8 @@ window.BibleReader = {
         });
     },
 
-    // 6. 통독 체크 토글
-    async toggleCurrentChapterRead() {
-        const unit = window.BibleApp.state.currentUnitCode;
-        const res = await window.BibleApp.fetchApi('/user/reading-toggle', {
-            method: 'POST',
-            body: JSON.stringify({ unit_code: unit })
-        });
-        this.updateReadButtonState(res.is_read);
-        window.BibleApp.showToast(res.is_read ? '통독 완료로 체크되었습니다!' : '통독 체크가 해제되었습니다.');
-    },
-
-    updateReadButtonState(isRead) {
-        const btn = document.getElementById('btn-toggle-read');
-        const label = document.getElementById('read-btn-label');
-        if (!btn || !label) return;
-
-        if (isRead) {
-            btn.classList.add('read-completed');
-            label.textContent = '통독 완료 됨 ✓';
-        } else {
-            btn.classList.remove('read-completed');
-            label.textContent = '통독 완료 체크';
-        }
-    },
-
-    // 7. Web Speech API (TTS) 음성 낭독 & 싱크
+    // 6. Web Speech API (TTS) 음성 낭독 & 싱크
     setupTtsEvents() {
-        document.getElementById('btn-toggle-read')?.addEventListener('click', () => this.toggleCurrentChapterRead());
-
         // 헤더 낭독 토글 버튼
         document.getElementById('btn-toggle-tts')?.addEventListener('click', () => {
             this.toggleAudioBar();

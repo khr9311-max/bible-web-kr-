@@ -50,7 +50,6 @@ window.BibleApp = {
         window.BibleSearch?.init();
         window.BibleCrossRef?.init();
         window.BibleCardGen?.init();
-        window.BibleReading?.init();
 
         // Lucide Icons 렌더링
         if (window.lucide) {
@@ -343,12 +342,6 @@ window.BibleApp = {
         document.getElementById('btn-bottom-prev')?.addEventListener('click', () => this.navigatePrevChapter());
         document.getElementById('btn-bottom-next')?.addEventListener('click', () => this.navigateNextChapter());
 
-        // 통독 체크 후 다음 장
-        document.getElementById('btn-bottom-check-next')?.addEventListener('click', async () => {
-            await window.BibleReader?.toggleCurrentChapterRead();
-            this.navigateNextChapter();
-        });
-
         // 집중 모드 토글 버튼들
         document.getElementById('btn-toggle-focus')?.addEventListener('click', () => {
             this.toggleFocusMode(!this.state.isFocusMode);
@@ -360,14 +353,6 @@ window.BibleApp = {
         // 모달 열기 버튼들
         document.getElementById('btn-open-nav')?.addEventListener('click', () => this.openModal('modal-navigator'));
         document.getElementById('btn-open-search')?.addEventListener('click', () => this.openModal('modal-search'));
-        document.getElementById('btn-open-reading')?.addEventListener('click', () => {
-            this.openModal('modal-reading');
-            window.BibleReading?.loadData();
-        });
-        document.getElementById('btn-open-card-gen')?.addEventListener('click', () => {
-            this.openModal('modal-card-gen');
-            window.BibleCardGen?.prepareCard();
-        });
         document.getElementById('btn-open-settings')?.addEventListener('click', () => this.openModal('modal-settings'));
         document.getElementById('btn-open-family-links')?.addEventListener('click', () => this.openModal('modal-family-links'));
 

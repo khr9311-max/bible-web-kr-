@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>말씀성경 - 스마트 다역본 뷰어 & 통독 PWA</title>
-    <meta name="description" content="말씀성경 웹 애플리케이션: 다역본 대조, 원어 스트롱 코드 사전, 스마트 관주 탐색, 말씀 카드 제작, 맥체인 통독 플래너 및 오프라인 PWA 지원">
+    <title>말씀성경 - 스마트 다역본 성경 뷰어 PWA</title>
+    <meta name="description" content="말씀성경 웹 애플리케이션: 10개 다역본 대조, 원어 스트롱 코드 사전, 스마트 관주 탐색, 병행 연관 말씀 및 오프라인 PWA 지원">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#12151b">
 
@@ -96,12 +96,6 @@
             <button class="icon-action-btn" id="btn-open-search" title="성경 검색 (Ctrl+F)">
                 <i data-lucide="search"></i>
             </button>
-            <button class="icon-action-btn" id="btn-open-reading" title="통독 플래너 & 진도표">
-                <i data-lucide="check-circle-2"></i>
-            </button>
-            <button class="icon-action-btn" id="btn-open-card-gen" title="말씀 이미지 카드 생성">
-                <i data-lucide="image"></i>
-            </button>
             <button class="icon-action-btn" id="btn-open-settings" title="보기 설정 (글꼴/테마/문단)">
                 <i data-lucide="sliders"></i>
             </button>
@@ -135,12 +129,6 @@
                     <h1 class="chapter-full-title" id="chapter-title">창세기 1장</h1>
                     <span class="chapter-subtitle" id="chapter-subtitle">구약 / 율법서</span>
                 </div>
-                <div class="chapter-meta-actions">
-                    <button class="pill-btn read-check-btn" id="btn-toggle-read">
-                        <i data-lucide="circle-check"></i>
-                        <span id="read-btn-label">통독 완료 체크</span>
-                    </button>
-                </div>
             </div>
 
             <!-- Verse List Grid (Single / Compare Split View) -->
@@ -156,9 +144,6 @@
             <div class="chapter-footer-nav">
                 <button class="bottom-page-btn" id="btn-bottom-prev">
                     <i data-lucide="arrow-left"></i> 이전 장
-                </button>
-                <button class="bottom-page-btn primary-check" id="btn-bottom-check-next">
-                    <i data-lucide="check-check"></i> 통독 체크 후 다음 장
                 </button>
                 <button class="bottom-page-btn" id="btn-bottom-next">
                     다음 장 <i data-lucide="arrow-right"></i>
@@ -371,53 +356,7 @@
         </div>
     </div>
 
-    <!-- 4. Reading Tracker Modal (통독 플래너) -->
-    <div class="modal-overlay" id="modal-reading">
-        <div class="modal-card reading-modal-card">
-            <div class="modal-header">
-                <h3><i data-lucide="chart-pie"></i> 성경 통독 플래너 & 진도표</h3>
-                <button class="btn-close-modal" data-close="modal-reading"><i data-lucide="x"></i></button>
-            </div>
-            <div class="modal-body reading-modal-body">
-                <!-- Progress Summary Card -->
-                <div class="progress-summary-card">
-                    <div class="progress-donut-wrap">
-                        <div class="donut-circle" id="donut-progress-display">
-                            <span class="donut-percent" id="total-percent-text">0.0%</span>
-                            <span class="donut-sub">전체 1,189장</span>
-                        </div>
-                    </div>
-                    <div class="progress-details">
-                        <div class="prog-row">
-                            <span>전체 읽은 장:</span>
-                            <strong id="stat-read-total">0 / 1189장</strong>
-                        </div>
-                        <div class="prog-row">
-                            <span>구약 진도율:</span>
-                            <strong id="stat-ot-prog">0% (0/929장)</strong>
-                        </div>
-                        <div class="prog-row">
-                            <span>신약 진도율:</span>
-                            <strong id="stat-nt-prog">0% (0/260장)</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Today's M'Cheyne Reading Schedule -->
-                <div class="mcheyne-section">
-                    <div class="section-title-bar">
-                        <h4>오늘의 맥체인 성경 읽기표</h4>
-                        <span class="day-badge" id="mcheyne-day-badge">Day 1</span>
-                    </div>
-                    <div class="mcheyne-grid" id="mcheyne-chapters-list">
-                        <!-- Dynamic Today's Plan Cards -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 5. Viewer Settings Modal -->
+    <!-- 4. Viewer Settings Modal -->
     <div class="modal-overlay" id="modal-settings">
         <div class="modal-card settings-modal-card">
             <div class="modal-header">
@@ -775,7 +714,6 @@
     <script src="/js/navigator.js"></script>
     <script src="/js/cross_ref.js"></script>
     <script src="/js/card_generator.js"></script>
-    <script src="/js/reading_tracker.js"></script>
     <script src="/js/search.js"></script>
 </body>
 </html>

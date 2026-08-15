@@ -2662,20 +2662,28 @@ input[type="range"] {
 
 @media (max-width: 640px) {
     .app-header {
-        padding: 0 8px;
+        padding: 0 6px;
+        height: 48px;
     }
     .header-left {
         gap: 4px;
-        flex-shrink: 1;
-        overflow: hidden;
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .header-left::-webkit-scrollbar {
+        display: none;
     }
     .header-right {
-        gap: 4px;
+        gap: 3px;
         flex-shrink: 0;
+        margin-left: auto;
     }
     .icon-action-btn {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
     }
     .icon-action-btn svg,
     .icon-action-btn i {
@@ -2684,35 +2692,104 @@ input[type="range"] {
     }
     .brand-btn {
         padding: 0;
-        gap: 4px;
+        gap: 3px;
+        flex-shrink: 0;
     }
     .brand-title {
         display: none;
     }
     .brand-badge {
         font-size: 10px;
-        padding: 1px 5px;
+        padding: 2px 5px;
     }
     .nav-pill {
-        padding: 4px 8px;
-        font-size: 11.5px;
+        padding: 4px 7px;
+        font-size: 11px;
         gap: 3px;
+        flex-shrink: 0;
     }
     .compare-pill-btn {
-        padding: 4px 6px;
+        padding: 4px 7px;
         font-size: 11px;
+        flex-shrink: 0;
+    }
+    .compare-pill-btn.active {
+        background: rgba(59, 130, 246, 0.22);
+        border-color: var(--brand-primary);
+        color: var(--brand-primary);
+        font-weight: 700;
     }
     .book-selector-btn .location-text {
-        max-width: 75px;
+        max-width: 80px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     .version-selector-pill .version-pill-text {
-        max-width: 60px;
+        max-width: 75px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    /* Mobile Compare Mode View Layout */
+    .compare-col-header {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 6px 10px;
+        font-size: 11.5px;
+        border-radius: var(--radius-sm);
+    }
+    .compare-stitle-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 16px;
+        margin-bottom: 4px;
+    }
+    .compare-pri-stitle, .compare-sec-stitle {
+        font-size: 13.5px;
+    }
+    .verse-compare-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 5px 2px;
+    }
+    .compare-pri-col, .compare-sec-col {
+        font-size: var(--scripture-size);
+        line-height: var(--scripture-line-height);
+        word-break: keep-all;
+        overflow-wrap: break-word;
+    }
+    .compare-sec-col {
+        font-size: calc(var(--scripture-size) * 0.92);
+    }
+
+    /* Mobile Version Selector Modal */
+    .versions-modal-card {
+        width: 95%;
+        max-height: 90vh;
+        padding: 16px 12px;
+    }
+    .version-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .version-card-btn {
+        padding: 10px 12px;
+    }
+    .version-card-btn .ver-name {
+        font-size: 14px;
+    }
+    .version-card-btn .ver-desc {
+        font-size: 10px;
+    }
+    .versions-tab-bar {
+        gap: 4px;
+        padding: 3px;
+    }
+    .version-tab-btn {
+        font-size: 12.5px;
+        padding: 8px 4px;
     }
 
     /* Mobile Selection Toolbar (스크롤 없는 모바일 최적화 독) */
@@ -2779,5 +2856,36 @@ input[type="range"] {
     .speed-select {
         font-size: 11px;
         padding: 2px 4px;
+    }
+}
+
+@media (max-width: 380px) {
+    .app-header {
+        padding: 0 4px;
+    }
+    .header-left {
+        gap: 2px;
+    }
+    .header-right {
+        gap: 2px;
+    }
+    .icon-action-btn {
+        width: 26px;
+        height: 26px;
+    }
+    .nav-pill {
+        padding: 3px 5px;
+        font-size: 10px;
+        gap: 2px;
+    }
+    .book-selector-btn .location-text {
+        max-width: 62px;
+    }
+    .version-selector-pill .version-pill-text {
+        max-width: 50px;
+    }
+    .compare-pill-btn {
+        padding: 3px 5px;
+        font-size: 10px;
     }
 }
