@@ -1564,6 +1564,11 @@ body.focus-mode-active .floating-exit-focus-btn {
     pointer-events: auto;
 }
 
+/* 낭독 바와 구절 선택 툴바가 동시 활성화될 때 겹치지 않고 위에 자연스럽게 배치 */
+body.has-audio-bar-active .floating-selection-toolbar.active {
+    bottom: 98px;
+}
+
 .toolbar-header {
     display: flex;
     align-items: center;
@@ -2917,6 +2922,9 @@ input[type="range"] {
         padding: 8px 10px;
         gap: 6px;
         border-radius: var(--radius-md);
+    }
+    body.has-audio-bar-active .floating-selection-toolbar.active {
+        bottom: 70px; /* 모바일에서 하단 50px 오디오 바 바로 위에 겹치지 않게 배치 */
     }
     .toolbar-top-row {
         gap: 4px;

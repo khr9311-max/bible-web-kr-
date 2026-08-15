@@ -791,6 +791,7 @@ window.BibleReader = {
 
         const willBeActive = forceState !== null ? forceState : !audioBar.classList.contains('active');
         audioBar.classList.toggle('active', willBeActive);
+        document.body.classList.toggle('has-audio-bar-active', willBeActive);
 
         const headerBtn = document.getElementById('btn-toggle-tts');
         if (headerBtn) headerBtn.classList.toggle('active', willBeActive);
@@ -883,6 +884,10 @@ window.BibleReader = {
         this.tts.synth.cancel();
         this.updateAudioPlayIcon(false);
         document.querySelectorAll('.verse-item.audio-active, .verse-compare-row.audio-active').forEach(el => el.classList.remove('audio-active'));
+        const audioBar = document.getElementById('floating-audio-bar');
+        if (audioBar && !audioBar.classList.contains('active')) {
+            document.body.classList.remove('has-audio-bar-active');
+        }
     },
 
     updateAudioPlayIcon(isPlaying) {
