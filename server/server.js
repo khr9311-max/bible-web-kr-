@@ -163,6 +163,40 @@ app.post('/api/user/reading-toggle', (req, res) => {
     }
 });
 
+// 성경 인물/지명 사전 API
+app.get('/api/dictionary/verse', (req, res) => {
+    try {
+        const { unit_code, jeol } = req.query;
+        const entries = db.getDictionaryVerse(parseInt(unit_code, 10) || 0, parseInt(jeol, 10) || 1);
+        res.json({ success: true, data: { unit_code, jeol, count: entries.length, entries } });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.get('/api/dictionary/search', (req, res) => {
+    try {
+        const { q, category } = req.query;
+        const entries = db.searchDictionary((q || '').trim(), (category || '').trim());
+        res.json({ success: true, data: { query: q, category, count: entries.length, entries } });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+app.get('/api/dictionary/entry/:id', (req, res) => {
+    try {
+        const entry = db.getDictionaryEntry(parseInt(req.params.id, 10));
+        if (entry) {
+            res.json({ success: true, data: entry });
+        } else {
+            res.status(404).json({ success: false, error: 'Entry not found' });
+        }
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 // SPA Fallback (새로고침 시 메인 페이지 서빙)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));

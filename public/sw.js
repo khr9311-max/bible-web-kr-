@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordbible-cache-v11';
+const CACHE_NAME = 'wordbible-cache-v12';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -7,6 +7,7 @@ const STATIC_ASSETS = [
     '/js/reader.js',
     '/js/navigator.js',
     '/js/cross_ref.js',
+    '/js/dictionary.js',
     '/js/card_generator.js',
     '/js/search.js',
     '/manifest.json'

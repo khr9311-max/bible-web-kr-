@@ -168,18 +168,47 @@
             </div>
         </div>
 
-        <!-- Right Side Panel (Cross Reference) -->
+        <!-- Right Side Panel (Cross Reference & Biblical Dictionary) -->
         <aside class="side-inspect-panel" id="side-inspect-panel">
             <div class="side-panel-header">
-                <h3 id="side-panel-title">
-                    <i data-lucide="book-marked"></i> <span id="side-title-text">스마트 관주 탐색</span>
-                </h3>
+                <div class="side-panel-tabs">
+                    <button class="side-tab-btn active" id="tab-btn-crossref">
+                        <i data-lucide="git-fork"></i> <span>관주 탐색</span>
+                    </button>
+                    <button class="side-tab-btn" id="tab-btn-dict">
+                        <i data-lucide="book-marked"></i> <span>인물/지명 사전</span>
+                    </button>
+                </div>
                 <button class="btn-close-panel" id="btn-close-side-panel"><i data-lucide="x"></i></button>
             </div>
-            <div class="side-panel-content" id="side-panel-content">
+            
+            <!-- Tab 1: 관주 탐색 뷰 -->
+            <div class="side-panel-content" id="side-view-crossref">
                 <div class="panel-empty-state">
                     <i data-lucide="mouse-pointer-click"></i>
                     <p>본문에서 관주 기호나 절을 클릭하면<br>연관 관주 참조 구절이 표시됩니다.</p>
+                </div>
+            </div>
+
+            <!-- Tab 2: 성경 인물/지명 사전 뷰 -->
+            <div class="side-panel-dict-wrap" id="side-view-dict" style="display:none;">
+                <div class="dict-search-bar-wrap">
+                    <div class="dict-input-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="dict-search-input" placeholder="인물 또는 지명 검색 (예: 아브라함, 갈릴리)" autocomplete="off">
+                        <button class="btn-clear-dict" id="btn-clear-dict-search" title="검색어 지우기"><i data-lucide="x"></i></button>
+                    </div>
+                    <div class="dict-cat-filter-bar">
+                        <button class="dict-cat-chip active" data-category="">전체</button>
+                        <button class="dict-cat-chip" data-category="인물">👤 인물</button>
+                        <button class="dict-cat-chip" data-category="지명">📍 지명</button>
+                    </div>
+                </div>
+                <div class="dict-results-scroll" id="dict-results-container">
+                    <div class="panel-empty-state">
+                        <i data-lucide="book-open"></i>
+                        <p>구절을 선택하거나 상단에서<br>성경 인물이나 지명을 검색해보세요.</p>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -200,6 +229,7 @@
             <div class="toolbar-divider"></div>
             <button class="toolbar-btn" id="btn-action-tts" title="선택 구절 음성 낭독"><i data-lucide="volume-2"></i> 낭독</button>
             <button class="toolbar-btn" id="btn-action-crossref" title="관주"><i data-lucide="git-fork"></i> 관주</button>
+            <button class="toolbar-btn" id="btn-action-dict" title="성경 인물/지명 사전"><i data-lucide="book-marked"></i> 사전</button>
             <button class="toolbar-btn" id="btn-action-copy" title="구절 복사"><i data-lucide="copy"></i> 복사</button>
         </div>
     </div>
@@ -725,5 +755,6 @@
     <script src="/js/cross_ref.js"></script>
     <script src="/js/card_generator.js"></script>
     <script src="/js/search.js"></script>
+    <script src="/js/dictionary.js"></script>
 </body>
 </html>

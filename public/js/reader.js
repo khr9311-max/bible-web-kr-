@@ -599,6 +599,13 @@ window.BibleReader = {
             window.BibleCrossRef?.showForVerse(window.BibleApp.state.currentUnitCode, sorted[0].jeol);
         });
 
+        // 성경 인물/지명 사전 보기
+        document.getElementById('btn-action-dict')?.addEventListener('click', () => {
+            const sorted = this.getSelectedVersesSorted();
+            if (sorted.length === 0) return;
+            window.BibleDictionary?.showForVerse(window.BibleApp.state.currentUnitCode, sorted[0].jeol);
+        });
+
         // 일괄 구절 복사
         document.getElementById('btn-action-copy')?.addEventListener('click', () => {
             const sorted = this.getSelectedVersesSorted();

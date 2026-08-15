@@ -210,7 +210,88 @@ class handler(http.server.BaseHTTPRequestHandler):
                     "verses": verses_result
                 })
 
-            # 5. 검색
+            # 4.2 성경 인물/지명 사전 구절 연계 자동 감지 API
+            elif "dictionary/verse" in path:
+                unit_code = int(query.get("unit_code", [0])[0])
+                jeol = int(query.get("jeol", [1])[0])
+
+                cur.execute("SELECT phrase_rv, phrase_ko, phrase_nv FROM verses WHERE unit_code = ? AND jeol = ?;", (unit_code, jeol))
+                verse_row = cur.fetchone()
+                
+                matched = []
+                if verse_row:
+                    raw_rv = verse_row["phrase_rv"] or ""
+                    raw_ko = verse_row["phrase_ko"] or ""
+                    raw_nv = (verse_row["phrase_nv"] or "").lower()
+
+                    def clean_verse_text(text):
+                        txt = re.sub(r'<cite>\d+</cite>', '', text)
+                        txt = re.sub(r'<u[^>]*>[^<]*</u>', '', txt)
+                        txt = re.sub(r'<[^>]+>', '', txt)
+                        return txt.strip()
+
+                    clean_txt = f"{clean_verse_text(raw_rv)} {clean_verse_text(raw_ko)}"
+                    particles = r'(?:에서|으로|로써|으로써|부터|께서|에게|한테|이라|라고|이며|[이가은는을를과와의도만에로라며께])?'
+
+                    def match_word(word, text):
+                        if not word or len(word) < 1: return False
+                        pattern = rf'(?:^|[\s"\'(\[\-])' + re.escape(word) + rf'{particles}(?=[\s.,?!;:\)\]\-]|$)'
+                        return bool(re.search(pattern, text))
+
+                    cur.execute("SELECT * FROM bible_dictionary ORDER BY id ASC;")
+                    all_entries = [dict(r) for r in cur.fetchall()]
+
+                    for entry in all_entries:
+                        name_ko = entry["name_ko"]
+                        name_en = (entry["name_en"] or "").lower()
+                        aliases = [a.strip() for a in (entry["aliases"] or "").split(",") if a.strip()]
+
+                        base_names = [name_ko] + aliases
+                        if ' ' in name_ko:
+                            base_names.extend([p for p in name_ko.split() if len(p) >= 2])
+
+                        is_match = any(match_word(n, clean_txt) for n in base_names)
+                        if not is_match and name_en and len(name_en) >= 3 and name_en in raw_nv:
+                            is_match = True
+
+                        if is_match:
+                            matched.append(entry)
+
+                self.send_json({"unit_code": unit_code, "jeol": jeol, "count": len(matched), "entries": matched})
+
+            # 4.3 성경 인물/지명 사전 검색 및 목록 조회 API
+            elif "dictionary/search" in path or "dictionary/all" in path:
+                q = query.get("q", [""])[0].strip()
+                cat = query.get("category", [""])[0].strip()
+
+                sql = "SELECT * FROM bible_dictionary WHERE 1=1"
+                params = []
+
+                if cat and cat in ["인물", "지명"]:
+                    sql += " AND category = ?"
+                    params.append(cat)
+
+                if q:
+                    sql += " AND (name_ko LIKE ? OR name_en LIKE ? OR aliases LIKE ? OR meaning LIKE ? OR summary LIKE ?)"
+                    p = f"%{q}%"
+                    params.extend([p, p, p, p, p])
+
+                sql += " ORDER BY id ASC;"
+                cur.execute(sql, tuple(params))
+                items = [dict(r) for r in cur.fetchall()]
+                self.send_json({"query": q, "category": cat, "count": len(items), "entries": items})
+
+            # 4.4 성경 인물/지명 사전 단건 상세 조회 API
+            elif "dictionary/entry" in path:
+                entry_id = int(path.strip("/").split("/")[-1])
+                cur.execute("SELECT * FROM bible_dictionary WHERE id = ?;", (entry_id,))
+                row = cur.fetchone()
+                if row:
+                    self.send_json(dict(row))
+                else:
+                    self.send_json({"error": "Entry not found"}, status=404)
+
+            # 5. 본문 검색
             elif "search" in path:
                 q = query.get("q", [""])[0].strip()
                 version = query.get("version", ["rv"])[0]
