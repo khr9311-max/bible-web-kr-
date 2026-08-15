@@ -12,12 +12,14 @@ window.BibleReader = {
         isPlaying: false,
         currentVerseIndex: 0,
         rate: 1.0,
+        voiceGender: 'female', // 'female' | 'male'
         voices: []
     },
 
     init() {
         this.setupToolbarEvents();
         this.setupTtsEvents();
+        this.initTtsVoices();
         this.loadChapter(window.BibleApp.state.currentUnitCode, window.BibleApp.state.currentJeol);
     },
 
@@ -202,22 +204,29 @@ window.BibleReader = {
         return txt;
     },
 
-    // 복사 및 카드용 순수 텍스트 정제 (관주/각주/인용 기호 M, ㄱ, 1, 단락 기호 ○, HTML 태그 완전 제거)
+    // 복사, 카드 및 TTS용 순수 텍스트 정제 (관주/각주/인용 기호, <br>, HTML 태그 완전 제거)
     getPureVerseText(raw) {
         if (!raw) return '';
         let txt = raw;
         // 중간 소제목 및 연관구절 링크 제거
-        txt = txt.replace(/<h\d>[\s\S]*?<\/h\d>/gi, '');
+        txt = txt.replace(/<h\d[\s\S]*?<\/h\d>/gi, '');
         txt = txt.replace(/<a\s+[^>]*href=['"]lnk\.spc\?[^'"]+['"][^>]*>[\s\S]*?<\/a>/gi, '');
         txt = txt.replace(/<cite>\d+<\/cite>/gi, '');
         // 관주/각주/인용 태그 및 내부 기호(M, ㄱ, 1 등) 제거
         txt = txt.replace(/<u class=["']?[lnc]["']?>[^<]*<\/u>/gi, '');
         txt = txt.replace(/<span class=["']?crossref-mark["']?[^>]*>[^<]*<\/span>/gi, '');
-        // 모든 남은 HTML 태그 제거
-        txt = txt.replace(/<[^>]*>/g, '');
+        // 모든 남은 HTML 태그 (<br>, <p>, <b>, <i>, <q>, <span ...> 등) 공백 치환
+        txt = txt.replace(/<[^>]+>/g, ' ');
+        // HTML 특수 엔티티 변환
+        txt = txt.replace(/&nbsp;/gi, ' ')
+                 .replace(/&amp;/gi, '&')
+                 .replace(/&lt;/gi, '<')
+                 .replace(/&gt;/gi, '>')
+                 .replace(/&quot;/gi, '"')
+                 .replace(/&#39;/gi, "'");
         // 단락 구분 기호(○, ●, § 등) 제거
         txt = txt.replace(/[○●§]/g, '');
-        // 공백 정리
+        // 중복 공백 정리
         txt = txt.replace(/\s+/g, ' ').trim();
         return txt;
     },
@@ -573,6 +582,87 @@ window.BibleReader = {
     },
 
     // 6. Web Speech API (TTS) 음성 낭독 & 싱크
+    initTtsVoices() {
+        if (!this.tts.synth) return;
+        const loadVoices = () => {
+            this.tts.voices = this.tts.synth.getVoices() || [];
+        };
+        loadVoices();
+        if (typeof this.tts.synth.onvoiceschanged !== 'undefined') {
+            this.tts.synth.onvoiceschanged = loadVoices;
+        }
+
+        if (window.BibleApp?.state?.ttsVoiceGender) {
+            this.tts.voiceGender = window.BibleApp.state.ttsVoiceGender;
+        }
+        if (window.BibleApp?.state?.ttsSpeed) {
+            this.tts.rate = window.BibleApp.state.ttsSpeed;
+        }
+
+        const voiceSelect = document.getElementById('audio-voice-select');
+        if (voiceSelect) voiceSelect.value = this.tts.voiceGender;
+
+        const speedSelect = document.getElementById('audio-speed-select');
+        if (speedSelect) speedSelect.value = this.tts.rate.toFixed(1);
+    },
+
+    setVoiceGender(gender) {
+        this.tts.voiceGender = gender;
+        if (window.BibleApp?.state) {
+            window.BibleApp.state.ttsVoiceGender = gender;
+            window.BibleApp.saveSettings();
+        }
+        const voiceSelect = document.getElementById('audio-voice-select');
+        if (voiceSelect) voiceSelect.value = gender;
+
+        document.querySelectorAll('.voice-choice-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.voice === gender);
+        });
+
+        if (this.tts.isPlaying) {
+            this.playTtsFrom(this.tts.currentVerseIndex);
+        }
+    },
+
+    getTtsVoice(lang, gender) {
+        if (!this.tts.synth) return null;
+        const voices = this.tts.voices.length ? this.tts.voices : (this.tts.synth.getVoices() || []);
+        if (!voices || !voices.length) return null;
+
+        const isKo = lang.toLowerCase().startsWith('ko');
+        const langVoices = voices.filter(v => isKo ? v.lang.toLowerCase().startsWith('ko') : v.lang.toLowerCase().startsWith('en'));
+        if (!langVoices.length) return null;
+
+        const maleKeywords = ['male', 'man', 'injoon', '인준', 'minsu', '민수', 'david', 'george', 'guy', 'james', 'alex', 'fred', 'daniel', 'standard-c', 'standard-d', 'wavenet-c', 'wavenet-d', 'natural'];
+        const femaleKeywords = ['female', 'woman', 'heami', '혜미', 'sunhi', '선희', 'yuna', '유나', 'zira', 'samantha', 'karen', 'victoria', 'standard-a', 'standard-b', 'wavenet-a', 'wavenet-b'];
+
+        const targetKeywords = gender === 'male' ? maleKeywords : femaleKeywords;
+        
+        // 1. 키워드 일치 음성 우선 검색
+        const matched = langVoices.find(v => {
+            const nameLower = v.name.toLowerCase();
+            return targetKeywords.some(kw => nameLower.includes(kw));
+        });
+        if (matched) return matched;
+
+        // 2. 다른 성별 키워드가 배제된 음성 선택
+        if (gender === 'male') {
+            const nonFemale = langVoices.find(v => {
+                const nameLower = v.name.toLowerCase();
+                return !femaleKeywords.some(kw => nameLower.includes(kw));
+            });
+            if (nonFemale) return nonFemale;
+        } else {
+            const nonMale = langVoices.find(v => {
+                const nameLower = v.name.toLowerCase();
+                return !maleKeywords.some(kw => nameLower.includes(kw));
+            });
+            if (nonMale) return nonMale;
+        }
+
+        return langVoices[0];
+    },
+
     setupTtsEvents() {
         // 헤더 낭독 토글 버튼
         document.getElementById('btn-toggle-tts')?.addEventListener('click', () => {
@@ -611,8 +701,20 @@ window.BibleReader = {
             }
         });
 
+        // 남성/여성 음성 변경 이벤트
+        document.getElementById('audio-voice-select')?.addEventListener('change', (e) => {
+            this.setVoiceGender(e.target.value);
+            window.BibleApp.showToast(e.target.value === 'male' ? '남성 음성으로 변경되었습니다.' : '여성 음성으로 변경되었습니다.');
+        });
+
+        // 낭독 속도 변경 이벤트
         document.getElementById('audio-speed-select')?.addEventListener('change', (e) => {
-            this.tts.rate = parseFloat(e.target.value);
+            const spd = parseFloat(e.target.value);
+            this.tts.rate = spd;
+            if (window.BibleApp?.state) {
+                window.BibleApp.state.ttsSpeed = spd;
+                window.BibleApp.saveSettings();
+            }
             if (this.tts.isPlaying) {
                 this.playTtsFrom(this.tts.currentVerseIndex);
             }
@@ -643,7 +745,7 @@ window.BibleReader = {
             
             document.getElementById('audio-now-title').textContent = `${bName} ${ch}장 (${this.getVersionName(priVer)})`;
             if (firstVerse) {
-                const text = this.cleanVerseHtml(firstVerse[`phrase_${priVer}`] || firstVerse.phrase_rv);
+                const text = this.getPureVerseText(firstVerse[`phrase_${priVer}`] || firstVerse.phrase_rv);
                 document.getElementById('audio-now-verse').textContent = `${firstVerse.jeol}절: ${text.substring(0, 30)}...`;
             }
         }
@@ -662,13 +764,15 @@ window.BibleReader = {
         this.tts.currentVerseIndex = index;
         const verse = this.chapterData.verses[index];
         const priVer = window.BibleApp.state.primaryVersion;
-        const text = this.cleanVerseHtml(verse[`phrase_${priVer}`] || verse.phrase_rv);
+        
+        // HTML 태그, 관주, 각주 기호 등을 100% 제거한 깨끗한 순수 말씀 텍스트 추출
+        const pureText = this.getPureVerseText(verse[`phrase_${priVer}`] || verse.phrase_rv);
 
         const bName = window.BibleApp.state.currentBookMeta.name;
         const ch = window.BibleApp.state.currentChapter;
 
         document.getElementById('audio-now-title').textContent = `${bName} ${ch}장 (${this.getVersionName(priVer)})`;
-        document.getElementById('audio-now-verse').textContent = `${verse.jeol}절: ${text.substring(0, 35)}...`;
+        document.getElementById('audio-now-verse').textContent = `${verse.jeol}절: ${pureText.substring(0, 35)}...`;
 
         // 하이라이트 싱크
         document.querySelectorAll('.verse-item.audio-active, .verse-compare-row.audio-active').forEach(el => el.classList.remove('audio-active'));
@@ -678,10 +782,18 @@ window.BibleReader = {
             activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        const utterText = `${verse.jeol}절. ${text}`;
+        const isEnglish = (priVer === 'nv' || priVer === 'kj' || priVer === 'es' || priVer === 'nt' || priVer === 'nb');
+        const utterText = isEnglish ? `Verse ${verse.jeol}. ${pureText}` : `${verse.jeol}절. ${pureText}`;
         const utter = new SpeechSynthesisUtterance(utterText);
         utter.rate = this.tts.rate;
-        utter.lang = (priVer === 'nv' || priVer === 'kj' || priVer === 'es' || priVer === 'nt' || priVer === 'nb') ? 'en-US' : 'ko-KR';
+        utter.lang = isEnglish ? 'en-US' : 'ko-KR';
+
+        // 남성/여성 보이스 매핑 및 피치 조절
+        const targetVoice = this.getTtsVoice(utter.lang, this.tts.voiceGender);
+        if (targetVoice) {
+            utter.voice = targetVoice;
+        }
+        utter.pitch = this.tts.voiceGender === 'male' ? 0.88 : 1.05;
 
         utter.onend = () => {
             if (this.tts.isPlaying) {

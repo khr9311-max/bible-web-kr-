@@ -25,6 +25,8 @@ window.BibleApp = {
         showVerseNums: true,
         showRedLetters: true,
         isFocusMode: false,
+        ttsVoiceGender: 'female', // 'female' | 'male'
+        ttsSpeed: 1.0,
         books: [],
         currentBookMeta: null,
         selectedVerseEl: null,
@@ -546,6 +548,15 @@ window.BibleApp = {
         document.getElementById('chk-focus-mode')?.addEventListener('change', (e) => {
             this.toggleFocusMode(e.target.checked);
         });
+
+        // 음성 낭독 (TTS) 남성/여성 음성 선택
+        document.querySelectorAll('.voice-choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const gender = btn.dataset.voice;
+                window.BibleReader?.setVoiceGender(gender);
+                this.showToast(gender === 'male' ? '남성 음성으로 변경되었습니다.' : '여성 음성으로 변경되었습니다.');
+            });
+        });
     },
 
     // 6. 테마 & 뷰어 스타일 적용
@@ -781,7 +792,9 @@ window.BibleApp = {
             showCrossrefs: this.state.showCrossrefs,
             showVerseNums: this.state.showVerseNums,
             showRedLetters: this.state.showRedLetters,
-            isFocusMode: this.state.isFocusMode
+            isFocusMode: this.state.isFocusMode,
+            ttsVoiceGender: this.state.ttsVoiceGender || 'female',
+            ttsSpeed: this.state.ttsSpeed || 1.0
         };
         localStorage.setItem('wordbible_app_settings', JSON.stringify(config));
     },
@@ -829,6 +842,14 @@ window.BibleApp = {
 
                 const focusChk = document.getElementById('chk-focus-mode');
                 if (focusChk) focusChk.checked = this.state.isFocusMode;
+
+                // 음성 선택 동기화
+                document.querySelectorAll('.voice-choice-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.voice === (this.state.ttsVoiceGender || 'female'));
+                });
+
+                const voiceSelect = document.getElementById('audio-voice-select');
+                if (voiceSelect) voiceSelect.value = this.state.ttsVoiceGender || 'female';
 
                 // 뷰모드 버튼 동기화
                 document.querySelectorAll('.viewmode-btn').forEach(b => {

@@ -229,6 +229,10 @@
             <button class="audio-ctrl-btn" id="btn-audio-stop" title="정지"><i data-lucide="square"></i></button>
         </div>
         <div class="audio-right">
+            <select id="audio-voice-select" class="voice-select" title="낭독 음성 (남성/여성)">
+                <option value="female" selected>여성 음성</option>
+                <option value="male">남성 음성</option>
+            </select>
             <select id="audio-speed-select" class="speed-select" title="낭독 배속">
                 <option value="0.8">0.8x</option>
                 <option value="1.0" selected>1.0x</option>
@@ -486,6 +490,19 @@
                             <input type="checkbox" id="chk-focus-mode">
                             <span>성경 본문만 보기 (집중 모드)</span>
                         </label>
+                    </div>
+                </div>
+
+                <!-- 7. 음성 낭독 (TTS) 설정 -->
+                <div class="setting-item">
+                    <label class="setting-title">음성 낭독 (TTS) 음성 선택</label>
+                    <div class="theme-select-grid">
+                        <button class="voice-choice-btn active" data-voice="female">
+                            <i data-lucide="user"></i> 여성 음성
+                        </button>
+                        <button class="voice-choice-btn" data-voice="male">
+                            <i data-lucide="user-check"></i> 남성 음성
+                        </button>
                     </div>
                 </div>
             </div>
