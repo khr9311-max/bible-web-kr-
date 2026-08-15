@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordbible-cache-v20';
+const CACHE_NAME = 'wordbible-cache-v21';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
