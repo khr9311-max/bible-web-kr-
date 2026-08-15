@@ -200,8 +200,8 @@ window.BibleReader = {
         // 4. 관주(l)/각주(n)/구약인용구(c) 기호 마크업 변환
         txt = txt.replace(/<u class=["']?[lnc]["']?>([^<]+)<\/u>/gi, '<span class="crossref-mark" title="관주/인용/각주 보기">$1</span>');
         
-        // 5. 예수님 말씀 인용구 태그
-        txt = txt.replace(/<q>/gi, '<q class="jesus-word">');
+        // 5. 예수님 말씀 (신약 <i> 태그) 인용구 마크업
+        txt = txt.replace(/<i>/gi, '<span class="jesus-word">').replace(/<\/i>/gi, '</span>');
         return txt;
     },
 

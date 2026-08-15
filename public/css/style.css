@@ -990,27 +990,29 @@ body {
 }
 
 /* Red Letter Edition (예수님 말씀 별색) */
-.show-red-letters i,
-.show-red-letters q, 
+.jesus-word {
+    font-style: normal;
+}
+q {
+    quotes: none;
+}
+q::before, q::after {
+    content: none;
+}
+
 .show-red-letters .jesus-word, 
 .show-red-letters .red-letter {
     color: #f43f5e !important;
 }
 
-[data-theme="dark"] .show-red-letters i,
-[data-theme="dark"] .show-red-letters q,
 [data-theme="dark"] .show-red-letters .jesus-word {
     color: #fb7185 !important;
 }
 
-[data-theme="sepia"] .show-red-letters i,
-[data-theme="sepia"] .show-red-letters q,
 [data-theme="sepia"] .show-red-letters .jesus-word {
     color: #be123c !important;
 }
 
-[data-theme="light"] .show-red-letters i,
-[data-theme="light"] .show-red-letters q,
 [data-theme="light"] .show-red-letters .jesus-word {
     color: #e11d48 !important;
 }
