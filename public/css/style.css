@@ -1746,6 +1746,88 @@ body.focus-mode-active .floating-exit-focus-btn {
     transform: translateY(-1px);
 }
 
+/* Biblical Place Map Styles (성지 지도 임베드 & 링크) */
+.dict-place-map-section {
+    margin-top: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.dict-map-toggle-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-emerald, #10b981);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.dict-map-toggle-btn:hover {
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.dict-map-toggle-btn svg, .dict-map-toggle-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+.dict-map-wrapper {
+    border-top: 1px solid var(--border-subtle);
+    padding: 8px;
+    background: var(--bg-surface-elevated);
+}
+
+.dict-iframe-box {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-base);
+}
+
+.dict-map-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.dict-map-links-bar {
+    margin-top: 6px;
+    text-align: right;
+}
+
+.dict-ext-map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brand-primary);
+    text-decoration: none;
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+}
+
+.dict-ext-map-link:hover {
+    background: rgba(37, 99, 235, 0.1);
+    text-decoration: underline;
+}
+
+.dict-ext-map-link svg, .dict-ext-map-link i {
+    width: 12px;
+    height: 12px;
+}
+
 .dict-popular-section {
     margin-top: 20px;
     padding: 14px;

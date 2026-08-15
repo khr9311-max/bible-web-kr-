@@ -245,6 +245,7 @@ window.BibleDictionary = {
 
     buildEntryCardHtml(entry, highlightQuery = '') {
         const isPerson = entry.category === '인물';
+        const isPlace = entry.category === '지명';
         const catBadgeClass = isPerson ? 'badge-person' : 'badge-place';
         const catIcon = isPerson ? '👤' : '📍';
 
@@ -268,6 +269,41 @@ window.BibleDictionary = {
         const engHtml = entry.name_en 
             ? `<span class="dict-eng-name">${entry.name_en}</span>` 
             : '';
+
+        // 지명(Place)인 경우 Google 지도 임베드 및 링크 생성
+        let mapHtml = '';
+        if (isPlace) {
+            let embedUrl = '';
+            let extUrl = '';
+
+            if (entry.latitude && entry.longitude) {
+                embedUrl = `https://maps.google.com/maps?q=${entry.latitude},${entry.longitude}&hl=ko&z=11&output=embed`;
+                extUrl = `https://www.google.com/maps/search/?api=1&query=${entry.latitude},${entry.longitude}`;
+            } else {
+                const searchQ = `${entry.name_ko} 성지`;
+                embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(searchQ)}&hl=ko&z=10&output=embed`;
+                extUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQ)}`;
+            }
+
+            mapHtml = `
+                <div class="dict-place-map-section">
+                    <button class="dict-map-toggle-btn" data-target="dict-map-${entry.id}">
+                        <i data-lucide="map-pin"></i> <span>Google 성지 지도 보기</span>
+                        <i data-lucide="chevron-down" class="map-chevron-icon"></i>
+                    </button>
+                    <div class="dict-map-wrapper" id="dict-map-${entry.id}" style="display: none;">
+                        <div class="dict-iframe-box">
+                            <iframe class="dict-map-iframe" src="${embedUrl}" loading="lazy" allowfullscreen></iframe>
+                        </div>
+                        <div class="dict-map-links-bar">
+                            <a href="${extUrl}" target="_blank" rel="noopener noreferrer" class="dict-ext-map-link">
+                                <i data-lucide="external-link"></i> <span>Google 지도 앱에서 크게 보기 (위성/3D)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         return `
             <div class="dict-entry-card" id="dict-entry-${entry.id}">
@@ -293,6 +329,8 @@ window.BibleDictionary = {
                     </div>
                 ` : ''}
 
+                ${mapHtml}
+
                 ${keyVerseChips ? `
                     <div class="dict-card-verses">
                         <div class="dict-verses-title"><i data-lucide="book-open"></i> 관련 대표 구절</div>
@@ -311,6 +349,29 @@ window.BibleDictionary = {
                 if (ref && window.BibleReader?.lookupParallelRef) {
                     window.BibleReader.lookupParallelRef(ref);
                 }
+            });
+        });
+
+        // 지도 토글 버튼 클릭 이벤트
+        document.querySelectorAll('.dict-map-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                const mapWrap = document.getElementById(targetId);
+                if (!mapWrap) return;
+
+                const isHidden = mapWrap.style.display === 'none';
+                mapWrap.style.display = isHidden ? 'block' : 'none';
+                btn.classList.toggle('active', isHidden);
+                
+                const span = btn.querySelector('span');
+                if (span) {
+                    span.textContent = isHidden ? 'Google 성지 지도 접기' : 'Google 성지 지도 보기';
+                }
+                const chevron = btn.querySelector('.map-chevron-icon');
+                if (chevron) {
+                    chevron.setAttribute('data-lucide', isHidden ? 'chevron-up' : 'chevron-down');
+                }
+                if (window.lucide) window.lucide.createIcons();
             });
         });
     },
