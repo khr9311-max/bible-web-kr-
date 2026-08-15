@@ -106,20 +106,24 @@ window.BibleApp = {
         const korName = `${this.state.currentBookMeta.name} ${this.state.currentChapter}장`;
         const engName = `${this.state.currentBookMeta.eng_name || this.state.currentBookMeta.name} ${this.state.currentChapter}`;
 
-        let locText = isPriEng ? engName : korName;
+        // 상단바 권/장 버튼 텍스트: 항상 깔끔하고 간결하게 유지 (모바일 스크롤바/가림 원천 방지)
+        const locNavText = isPriEng ? engName : korName;
+
+        // 본문 제목 텍스트 (대조 모드 시 보조 영문명 포함)
+        let chapterTitleText = isPriEng ? engName : korName;
         if (this.state.isCompareMode) {
             if (!isPriEng && isCompEng) {
-                locText = `${korName} (${this.state.currentBookMeta.eng_name || ''} ${this.state.currentChapter})`;
+                chapterTitleText = `${korName} (${this.state.currentBookMeta.eng_name || ''} ${this.state.currentChapter})`;
             } else if (isPriEng && !isCompEng) {
-                locText = `${engName} (${this.state.currentBookMeta.name} ${this.state.currentChapter}장)`;
+                chapterTitleText = `${engName} (${this.state.currentBookMeta.name} ${this.state.currentChapter}장)`;
             }
         }
 
         const locEl = document.getElementById('current-location-text');
-        if (locEl) locEl.textContent = locText;
+        if (locEl) locEl.textContent = locNavText;
 
         const titleEl = document.getElementById('chapter-title');
-        if (titleEl) titleEl.textContent = locText;
+        if (titleEl) titleEl.textContent = chapterTitleText;
 
         const subEl = document.getElementById('chapter-subtitle');
         if (subEl) {
@@ -628,11 +632,12 @@ window.BibleApp = {
     updateVersionUI() {
         const pillText = document.getElementById('current-version-pill-text');
         const priName = this.getVersionName(this.state.primaryVersion);
-        const compName = this.getVersionName(this.state.compareVersion);
+        const priShort = this.getShortVersionName(this.state.primaryVersion);
+        const compShort = this.getShortVersionName(this.state.compareVersion);
 
         if (pillText) {
             pillText.textContent = this.state.isCompareMode 
-                ? `${priName} | ${compName}` 
+                ? `${priShort}·${compShort}` 
                 : priName;
         }
 
@@ -665,6 +670,14 @@ window.BibleApp = {
         const names = {
             'rv': '개역개정', 'ko': '개역한글', 'ez': '쉬운성경', 'wr': '우리말성경',
             'nw': '새번역', 'nv': 'NIV', 'nt': 'NLT', 'es': 'ESV', 'nb': 'NASB', 'kj': 'KJV'
+        };
+        return names[code] || code.toUpperCase();
+    },
+
+    getShortVersionName(code) {
+        const names = {
+            'rv': '개정', 'ko': '한글', 'ez': '쉬운', 'wr': '우리',
+            'nw': '새번', 'nv': 'NIV', 'nt': 'NLT', 'es': 'ESV', 'nb': 'NASB', 'kj': 'KJV'
         };
         return names[code] || code.toUpperCase();
     },

@@ -179,16 +179,32 @@ body {
 .nav-pill {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
+    gap: 3px;
+    padding: 4px 8px;
     background: var(--bg-surface-elevated);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-full);
     color: var(--text-primary);
     font-weight: 600;
-    font-size: 12px;
+    font-size: 11.5px;
     cursor: pointer;
     transition: all var(--transition-fast);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.book-selector-btn .location-text {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.version-selector-pill .version-pill-text {
+    max-width: 68px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
@@ -198,9 +214,10 @@ body {
 }
 
 .icon-small {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     color: var(--text-muted);
+    flex-shrink: 0;
 }
 
 /* Version Selector */
@@ -2698,55 +2715,52 @@ input[type="range"] {
 
 @media (max-width: 640px) {
     .app-header {
-        padding: 0 6px;
-        height: 48px;
+        padding: 0 4px;
+        height: 46px;
+        overflow: hidden;
     }
     .header-left {
-        gap: 4px;
+        gap: 3px;
         flex: 1;
         min-width: 0;
-        overflow-x: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-    .header-left::-webkit-scrollbar {
-        display: none;
+        overflow: hidden;
     }
     .header-right {
-        gap: 3px;
+        gap: 2px;
         flex-shrink: 0;
         margin-left: auto;
     }
     .icon-action-btn {
-        width: 28px;
-        height: 28px;
+        width: 27px;
+        height: 27px;
     }
     .icon-action-btn svg,
     .icon-action-btn i {
-        width: 14px;
-        height: 14px;
+        width: 13px;
+        height: 13px;
     }
     .brand-btn {
         padding: 0;
-        gap: 3px;
+        gap: 2px;
         flex-shrink: 0;
     }
     .brand-title {
         display: none;
     }
     .brand-badge {
-        font-size: 10px;
-        padding: 2px 5px;
+        font-size: 9.5px;
+        padding: 2px 4px;
     }
     .nav-pill {
-        padding: 4px 7px;
+        padding: 3px 6px;
         font-size: 11px;
-        gap: 3px;
+        height: 27px;
+        gap: 2px;
         flex-shrink: 0;
     }
     .compare-pill-btn {
-        padding: 4px 7px;
-        font-size: 11px;
+        padding: 3px 6px;
+        font-size: 10.5px;
         flex-shrink: 0;
     }
     .compare-pill-btn.active {
@@ -2756,13 +2770,13 @@ input[type="range"] {
         font-weight: 700;
     }
     .book-selector-btn .location-text {
-        max-width: 80px;
+        max-width: 72px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
     .version-selector-pill .version-pill-text {
-        max-width: 75px;
+        max-width: 58px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -2897,31 +2911,42 @@ input[type="range"] {
 
 @media (max-width: 380px) {
     .app-header {
-        padding: 0 4px;
+        padding: 0 2px;
+        height: 44px;
     }
     .header-left {
         gap: 2px;
     }
     .header-right {
-        gap: 2px;
+        gap: 1px;
     }
     .icon-action-btn {
-        width: 26px;
-        height: 26px;
+        width: 25px;
+        height: 25px;
+    }
+    .icon-action-btn svg,
+    .icon-action-btn i {
+        width: 12px;
+        height: 12px;
+    }
+    .brand-badge {
+        font-size: 9px;
+        padding: 1px 3px;
     }
     .nav-pill {
-        padding: 3px 5px;
+        padding: 2px 4px;
         font-size: 10px;
-        gap: 2px;
+        height: 25px;
+        gap: 1px;
     }
     .book-selector-btn .location-text {
-        max-width: 62px;
+        max-width: 56px;
     }
     .version-selector-pill .version-pill-text {
-        max-width: 50px;
+        max-width: 44px;
     }
     .compare-pill-btn {
-        padding: 3px 5px;
+        padding: 2px 4px;
         font-size: 10px;
     }
 }
